@@ -21,9 +21,13 @@ class ViewModule{
         $this->data[$key] = $value;
     }
 
+    public function SetTemplate($file){
+        $this->view->Set('template', Config::PATH_MODULES_VIEW . $this->name . Config::PATH_SEPARATOR . $file . '.php');
+    }
+
     public function Show(){
         if (!$this->view->HasTeamplate()) {
-            $this->view->Set('template', Config::PATH_MODULES_VIEW . $this->name . '.php');
+            $this->view->Set('template', Config::PATH_MODULES_VIEW . $this->name . Config::PATH_SEPARATOR . 'main.php');
         }
         require_once($this->view->Get('template'));
     }

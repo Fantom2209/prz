@@ -100,7 +100,7 @@
     </div>
 </div>
 
-<div id="modalUpdateProperties" class="modal fade">
+<!--<div id="modalUpdateProperties" class="modal fade">
     <div class="modal-dialog">
         <div class="modal-content">
 
@@ -155,4 +155,6 @@
             </div>
         </div>
     </div>
-</div>
+</div>-->
+
+<?php $this->modules->widget;

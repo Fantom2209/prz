@@ -37,16 +37,19 @@
             $site = new Sites();
             $result = $site->GetElementByField('id_user', $this->userManager->Get('UserId'));
             $properties = $site->GetProperties('yes');
+
+            $widget = $this->response->modules->Add('widget');
+            $widget->SetEditMode();
+
+            $widget->Set('propertiesEmpty', count($properties) == 0);
+            $widget->Set('Properties',$properties);
+
             $this->response->Set('sitesEmpty',count($result) == 0);
             $this->response->Set('Data',$result);
-            $this->response->Set('propertiesEmpty', count($properties) == 0);
-            $this->response->Set('Properties',$properties);
             $this->response->Set('UserId', $this->userManager->Get('UserId'));
             $this->response->Set('title','Личный кабинет');
-
             $this->response->Set('IsAdmin',$this->userManager->InRole(array(Users::GROUP_ADMINISTRATOR)));
             $this->response->Set('IsSuperUser', $this->request->IsSuperUser());
-
         }
 
     }
