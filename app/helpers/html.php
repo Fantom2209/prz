@@ -161,4 +161,21 @@ class Html
         ';
     }
 
+    private static function Snipet_AccordionPanel(){
+        self::$html = '
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#{{1}}" href="#{{2}}">{{3}}</a>
+                    </h4>
+                </div>
+                <div id="{{2}}" class="panel-collapse collapse{{4}}">
+                    <div class="panel-body">
+                        {{5}}
+                    </div>
+                </div>
+            </div>
+        ';
+    }
+
 }

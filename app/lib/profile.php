@@ -38,18 +38,23 @@
             $result = $site->GetElementByField('id_user', $this->userManager->Get('UserId'));
             $properties = $site->GetProperties('yes');
 
+            $mp = array();
+            foreach($properties as $item){
+                $mp[$item['group']][] = $item;
+            }
+
             $widget = $this->response->modules->Add('widget');
             $widget->SetEditMode();
 
             $widget->Set('propertiesEmpty', count($properties) == 0);
-            $widget->Set('Properties',$properties);
+            $widget->Set('Properties',$mp);
+            $widget->Set('IsAdmin',$this->userManager->InRole(array(Users::GROUP_ADMINISTRATOR)));
+            $widget->Set('IsSuperUser', $this->request->IsSuperUser());
 
             $this->response->Set('sitesEmpty',count($result) == 0);
             $this->response->Set('Data',$result);
             $this->response->Set('UserId', $this->userManager->Get('UserId'));
             $this->response->Set('title','Личный кабинет');
-            $this->response->Set('IsAdmin',$this->userManager->InRole(array(Users::GROUP_ADMINISTRATOR)));
-            $this->response->Set('IsSuperUser', $this->request->IsSuperUser());
         }
 
     }

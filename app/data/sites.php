@@ -6,6 +6,7 @@
         private $propertiesTable;
         private $propertiesType;
         private $propertiesValueTable;
+        private $propertyGroup;
 
         public function __construct()
         {
@@ -13,6 +14,7 @@
             $this->propertiesTable = 'SiteProperties';
             $this->propertiesValueTable = 'PropertiesValue';
             $this->propertiesType = 'PropertyType';
+            $this->propertyGroup = 'PropertyGroup';
         }
 
         public function DeleteSite($id){
@@ -29,12 +31,18 @@
             return $this->Query($sql)->Run()->GetAll();
         }
 
+        public function GetPropertiesGroup(){
+            $sql = 'SELECT * FROM `'.$this->prefix.$this->propertyGroup.'`';
+            return $this->Query($sql)->Run()->GetAll();
+        }
+
         public function GetProperties($active = null){
-            $sql = 'SELECT `s`.`id`, `s`.`name`, `active`, `s`.`type` AS `typeId`, `t`.`name` AS `typeName`, `dop`, `system`  FROM `'.$this->prefix.$this->propertiesTable.'` `s` LEFT JOIN `'.$this->prefix.$this->propertiesType.'` `t` ON `s`.`type` = `t`.`id`';
+            $sql = 'SELECT `s`.`id`, `s`.`name`, `active`, `s`.`type` AS `typeId`, `t`.`name` AS `typeName`, `dop`, `system`, `g`.`name` as `group`, `g`.`id` as `groupId`  FROM `'.$this->prefix.$this->propertiesTable.'` `s` LEFT JOIN `'.$this->prefix.$this->propertiesType.'` `t` ON `s`.`type` = `t`.`id` LEFT JOIN `'.$this->prefix.$this->propertyGroup.'` `g` ON `s`.`sGroup` = `g`.`id`';
             if($active){
                 $this->SetOperData(array($active));
                 $sql .= ' WHERE `active` = ?';
             }
+            $sql .= ' ORDER BY `g`.`id`, `s`.`id`';
             return $this->Query($sql)->Run()->GetAll();
         }
 

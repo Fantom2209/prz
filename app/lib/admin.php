@@ -34,9 +34,11 @@ class Admin extends \app\core\Page{
     public function Properties(){
         $site = new Sites();
         $propertiesType = $site->GetPropertiestType();
+        $propertiesGroup = $site->GetPropertiesGroup();
 
         $this->response->Set('properties',$site->GetProperties());
         $this->response->Set('PropertiesType',$propertiesType);
+        $this->response->Set('PropertiesGroup',$propertiesGroup);
         $this->response->Set('title','Настройка свойств сайтов');
     }
 

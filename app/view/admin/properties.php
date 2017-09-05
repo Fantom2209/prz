@@ -21,21 +21,6 @@
             </table>
 
         </div>
-
-        <!--<div class="col-md-6">
-            <h3>Активировать/Деактивировать</h3>
-            <form action="" method="POST" class="ajax-form">
-                <?php foreach($this->Get('properties') as $item):?>
-                    <div class="form-group">
-                        <label><?php echo $item['name'];?></label>
-                        <input type="checkbox" name="UserData[<?php echo $item['id'];?>]" <?php echo ($item['active'] == 'yes')?'checked="checked"':'';?>>
-                    </div>
-                <?php endforeach;?>
-
-                <button class="btn btn-primary">Обновить</button>
-            </form>
-        </div>-->
-
 </div>
 
 <div id="modalAddProperty" class="modal fade">
@@ -57,6 +42,17 @@
                     <div class="form-group">
                         <label>Активен:</label>
                         <input type="checkbox" id="field_active" name="UserData[active]">
+                        <div class="error-box"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Группа:</label>
+                        <select class="form-control" id="field_sGroup" name="UserData[sGroup]">
+                            <?php
+                            foreach($this->Get('PropertiesGroup') as $item){
+                                echo '<option value="'.$item['id'].'">'.$item['name'].'</option>';
+                            }
+                            ?>
+                        </select>
                         <div class="error-box"></div>
                     </div>
                     <div class="form-group">
@@ -110,6 +106,17 @@
                         <div class="error-box"></div>
                     </div>
                     <div class="form-group">
+                        <label>Группа:</label>
+                        <select class="form-control" id="field_sGroup" name="UserData[sGroup]">
+                            <?php
+                            foreach($this->Get('PropertiesGroup') as $item){
+                                echo '<option value="'.$item['id'].'">'.$item['name'].'</option>';
+                            }
+                            ?>
+                        </select>
+                        <div class="error-box"></div>
+                    </div>
+                    <div class="form-group">
                         <label>Тип:</label>
                         <select class="form-control" id="field_type" name="UserData[type]">
                             <?php
@@ -121,7 +128,7 @@
                         <div class="error-box"></div>
                     </div>
                     <div class="form-group">
-                        <label>Доп. информация: (value=..;snipet=..;validator=..;)</label>
+                        <label>Параметры: (value=..;snipet=..;validator=..;)</label>
                         <input class="form-control" type="text" id="field_dop" name="UserData[dop]">
                         <div class="error-box"></div>
                     </div>
@@ -147,7 +154,6 @@
             </div>
 
             <div class="modal-body">
-
                 <form action="" method="POST" class="ajax-form">
 
                 </form>
