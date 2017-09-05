@@ -40,6 +40,7 @@
 
             $mp = array();
             foreach($properties as $item){
+                $item['dop'] = $site->DecodeParams($item['dop']);
                 $mp[$item['group']][] = $item;
             }
 

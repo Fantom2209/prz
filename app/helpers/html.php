@@ -178,4 +178,10 @@ class Html
         ';
     }
 
+    private static function Snipet_TestTest(){
+        self::$html = '
+            <h2>Тестовый снипет</h2>
+        ';
+    }
+
 }

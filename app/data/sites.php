@@ -102,4 +102,16 @@
             $sql = 'INSERT INTO `'.$this->prefix.$this->propertiesTable.'` (`name`, `active`, `type`, `dop`,`system`) VALUES (?,?,?,?,?);';
             $this->SetOperData(array($data['name'], $data['active'], $data['type'], $data['dop'], $data['system']))->Query($sql)->Run();
         }
+
+        public function DecodeParams($str){
+            $result = array();
+            if(!empty($str)) {
+                $params = explode(';', $str);
+                foreach ($params as $item) {
+                    $x = explode('=', $item);
+                    $result[trim($x[0])] = trim($x[1]);
+                }
+            }
+            return $result;
+        }
     }

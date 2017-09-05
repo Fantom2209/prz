@@ -33,8 +33,11 @@
                                         continue;
                                     }
 
+                                    $snippet = !empty($item['dop']['snippet']) ? $item['dop']['snippet'] : 'Field'.$item['typeName'];
+                                    $validator = (!empty($item['dop']['validator']) ? $item['dop']['validator'] : $item['typeName']).':';
                                     if($item['typeName'] == 'Select'){
-                                        $elem = explode('|',$item['dop']);
+                                        $val = !empty($item['dop']['value']) ? $item['dop']['value'] : '';
+                                        $elem = explode('|',$val);
                                         $options = '';
                                         foreach($elem as $val){
                                             $options .= '<option>'.$val.'</option>';
@@ -45,11 +48,11 @@
                                     }
                                     else{
                                         $data = array(
-                                            $item['name'], $item['typeName'].':', $item['id']
+                                            $item['name'], $validator, $item['id']
                                         );
                                     }
 
-                                    $fieldsHtml .= Html::Snipet('Field'.$item['typeName'],$data);
+                                    $fieldsHtml .= Html::Snipet($snippet,$data);
                                 }
 
                                 if(!empty($fieldsHtml)){
