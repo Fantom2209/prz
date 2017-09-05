@@ -33,9 +33,37 @@
                                         continue;
                                     }
 
-                                    $snippet = !empty($item['dop']['snippet']) ? $item['dop']['snippet'] : 'Field'.$item['typeName'];
+                                    $snippet = 'Field'. (!empty($item['dop']['snippet']) ? $item['dop']['snippet'] : $item['typeName']);
                                     $validator = (!empty($item['dop']['validator']) ? $item['dop']['validator'] : $item['typeName']).':';
-                                    if($item['typeName'] == 'Select'){
+
+                                    switch($item['typeName']){
+                                        case 'Select':
+                                            $val = !empty($item['dop']['value']) ? $item['dop']['value'] : '';
+                                            $elem = explode('|',$val);
+                                            $options = '';
+                                            foreach($elem as $val){
+                                                $options .= '<option>'.$val.'</option>';
+                                            }
+                                            $data = array(
+                                                $item['name'], $item['id'], $options
+                                            );
+                                            break;
+                                        case 'Number':
+                                            $max = !empty($item['dop']['max']) ? $item['dop']['max'] : 255;
+                                            $min = !empty($item['dop']['min']) ? $item['dop']['min'] : 0;
+                                            $val = !empty($item['dop']['value']) ? $item['dop']['value'] : '';
+                                            $step = !empty($item['dop']['step']) ? $item['dop']['step'] : '';
+                                            $data = array(
+                                                $item['name'], $validator, $item['id'], $min, $max, $step, $val
+                                            );
+                                            break;
+                                        default:
+                                            $data = array(
+                                                $item['name'], $validator, $item['id']
+                                            );
+                                    }
+
+                                    /*if($item['typeName'] == 'Select'){
                                         $val = !empty($item['dop']['value']) ? $item['dop']['value'] : '';
                                         $elem = explode('|',$val);
                                         $options = '';
@@ -50,7 +78,7 @@
                                         $data = array(
                                             $item['name'], $validator, $item['id']
                                         );
-                                    }
+                                    }*/
 
                                     $fieldsHtml .= Html::Snipet($snippet,$data);
                                 }

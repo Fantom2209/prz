@@ -104,6 +104,17 @@ class Html
         ';
     }
 
+    private static function Snipet_FieldRange()
+    {
+        self::$html = '
+            <div class="form-group">
+                <label>{{1}}:</label>
+                <input class="number-range" id="field_{{3}}" data-slider-id=\'field_{{3}}\' type="text" data-slider-min="{{4}}" data-slider-max="{{5}}" data-slider-step="{{6}}" data-slider-value="{{7}}" name="UserData[{{2}}{{3}}]"/>
+                <div class="error-box"></div>
+            </div>
+        ';
+    }
+
     private static function Snipet_FieldDate()
     {
         self::$html = '

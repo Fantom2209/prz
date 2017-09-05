@@ -54,6 +54,16 @@ $(window).on('load', function(){
     });
 
     $('.dp').datepicker();
+
+    document.querySelectorAll('.number-range').forEach(function(item){
+        new Slider('#' + item.getAttribute('id'), {
+            formatter: function(value) {
+                return 'Текущее значение: ' + value;
+            }
+        });
+        alert(item.getAttribute('id'));
+    });
+
 });
 
 function goAjax(method, url, data){

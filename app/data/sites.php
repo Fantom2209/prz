@@ -72,8 +72,8 @@
         }
 
         public function UpdatePropertySite($id, $data){
-            $sql = 'UPDATE `'.$this->prefix.$this->propertiesTable.'` SET `name` = ?, `active` = ?, `type` = ?, `dop` = ?,`system` = ? WHERE `id` = ?';
-            $this->SetOperData(array($data['name'],$data['active'],$data['type'],$data['dop'],$data['system'],$id))->Query($sql)->Run();
+            $sql = 'UPDATE `'.$this->prefix.$this->propertiesTable.'` SET `name` = ?, `active` = ?, `type` = ?, `dop` = ?,`system` = ?, `sGroup` = ? WHERE `id` = ?';
+            $this->SetOperData(array($data['name'],$data['active'],$data['type'],$data['dop'],$data['system'], $data['sGroup'],$id))->Query($sql)->Run();
         }
 
         public function GetPropertiesValue($site){
@@ -99,8 +99,8 @@
         }
 
         public function AddProperty($data){
-            $sql = 'INSERT INTO `'.$this->prefix.$this->propertiesTable.'` (`name`, `active`, `type`, `dop`,`system`) VALUES (?,?,?,?,?);';
-            $this->SetOperData(array($data['name'], $data['active'], $data['type'], $data['dop'], $data['system']))->Query($sql)->Run();
+            $sql = 'INSERT INTO `'.$this->prefix.$this->propertiesTable.'` (`name`, `active`, `type`, `dop`,`system`,`sGroup`) VALUES (?,?,?,?,?,?);';
+            $this->SetOperData(array($data['name'], $data['active'], $data['type'], $data['dop'], $data['system'], $data['sGroup']))->Query($sql)->Run();
         }
 
         public function DecodeParams($str){
@@ -109,6 +109,9 @@
                 $params = explode(';', $str);
                 foreach ($params as $item) {
                     $x = explode('=', $item);
+                    if(!isset($x[1])){
+                        var_dump($x);
+                    }
                     $result[trim($x[0])] = trim($x[1]);
                 }
             }

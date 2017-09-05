@@ -5,6 +5,7 @@
 	<head>
 		<title><?php echo $this->Get('title');?></title>
 		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.1/css/bootstrap-slider.min.css" rel="stylesheet">
         <link href="<?php echo Config::URL_CSS;?>custom.css" rel="stylesheet">
         <link href="<?php echo Config::URL_CSS;?>jquery-ui.min.css" rel="stylesheet">
         <script src='https://www.google.com/recaptcha/api.js'></script>
@@ -45,6 +46,7 @@
 
         <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.1/bootstrap-slider.min.js"></script>
         <script src="<?php echo Config::URL_JS; ?>jquery-ui.min.js"></script>
         <script src="<?php echo Config::URL_JS; ?>custom.js"></script>
 

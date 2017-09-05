@@ -36,3 +36,11 @@ body { padding-top: 70px; }
 .disable-site{
     background: lightgray;
 }
+
+div[id^="field_"].slider .slider-selection {
+    background: #BABABA;
+}
+
+[id^="field_"].slider{
+    width:100%;
+}
