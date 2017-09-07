@@ -21,8 +21,7 @@
 		
 		public function __construct(){
 			$this->prefix = Config::DB_PREFIX;
-			$this->table = explode('\\', get_class($this));
-			$this->table = end($this->table);
+
 			
 			try {
                 $this->pdo = new \PDO('mysql:host=' . Config::DB_HOST . ';dbname=' . Config::DB_NAME, Config::DB_USER, Config::DB_PASSWORD);
@@ -39,8 +38,16 @@
 			$this->pdo = null;
 			$this->prepared = false;
 		}
-		
-		
+
+		public function SetTable($val){
+		    $this->table = $val;
+        }
+
+        public function DefaultTable(){
+            $this->table = explode('\\', get_class($this));
+            $this->table = end($this->table);
+        }
+
 		/* выборка */
 		
 		public function Select($fields = array()){
