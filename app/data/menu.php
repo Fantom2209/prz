@@ -13,7 +13,7 @@ class Menu extends \app\core\Model {
 
     public function GetItems($name){
         return $this->Select(
-            array(array('table'=>'MenuItems', 'field' => 'id'),'url', 'title', 'parent', 'position')
+            array(array('table'=>'t2', 'field' => 'id'),'url', 'title', 'parent', 'position')
         )->Binding(
             'LEFT','MenuItems','id','id_menu'
         )->Where(

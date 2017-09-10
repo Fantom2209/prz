@@ -96,11 +96,11 @@
         public function GetUsersList($id = null){
             $this->Select(
                 array(
-                    array('table'=>$this->GetCurrentTableName(),'field'=>'id'),
+                    array('table'=>'t1','field'=>'id'),
                     'email',
-                    array('table'=> $this->GetCurrentTableName(),'field'=>'name'),
+                    array('table'=>'t1','field'=>'name'),
                     'role_id',
-                    array('table'=>'Role', 'field'=>'name', 'label'=>'role_name'),
+                    array('table'=>'t2', 'field'=>'name', 'label'=>'role_name'),
                     'ban',
                     'phone'
                 )
