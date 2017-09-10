@@ -165,7 +165,7 @@
                     }
 
                     $html = '
-                        <input type="hidden" id="field_id" name="UserData[id]">
+                        <input type="hidden" id="field_id" name="UserData[id]" value="'.$id.'">
                         <div class="panel-group" id="accordion">' . $html .'</div>
                         <button class="btn btn-primary">Сохранить</button>
                     ';
@@ -184,6 +184,7 @@
             $data = $this->request->GetData('UserData');
             $phones = $this->request->GetData('PhoneList');
             $timezones = $this->request->GetData('TimezoneList');
+            $checkboxes = $this->request->GetData('CheckBoxList');
 
             $this->validator->Validate($data + $phones + $timezones);
 
@@ -195,25 +196,20 @@
                 $phones = Validator::CleanKey($phones);
                 $timezones = Validator::CleanKey($timezones);
 
-                echo "<pre>";
-                var_dump($data + $phones + $timezones);
-                echo "</pre>";
-
-                $mp = array();
-                foreach($phones as $key => $val){
-                    $mp[$key] = $val . '|' . $timezones[$key];
-                }
-
-                echo "<pre>";
-                var_dump($data + $mp);
-                echo "</pre>";exit;
-
-
                 $siteId = $data['id'];
                 unset($data['id']);
-                $site = new Sites();
-                $site->UpdatePropertiesValue($siteId, $data);
-                if ($site->IsSuccess()) {
+
+                $mPhones = array();
+                foreach($phones as $key => $val){
+                    $mPhones[$key] = $val . '|' . $timezones[$key];
+                }
+
+                $property = new Properties();
+                $checkboxes = $property->PrepareCheckBoxes($siteId, $checkboxes);
+
+                $property->UpdatePropertiesValue($siteId, $data + $mPhones + $checkboxes);
+
+                if ($property->IsSuccess()) {
                     $this->response->SetSuccess();
                 } else {
                     $this->response->SetError('Ошибка при обновлении!');

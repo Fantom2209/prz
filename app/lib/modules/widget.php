@@ -23,7 +23,7 @@ class Widget extends \app\core\ViewModule {
 
         $snippet = !empty($item['dop']['snippet']) ? $item['dop']['snippet'] : $item['typeName'];
         $validator = (!empty($item['dop']['validator']) ? $item['dop']['validator'] : $item['typeName']).':';
-        $item['id'] .= !empty($item['valueId']) ? '-' . $item['valueId'] : '';
+        $item['id'] .= !empty($item['idV']) ? '-' . $item['idV'] : '';
 
         switch($snippet){
             case 'Select':
@@ -44,6 +44,12 @@ class Widget extends \app\core\ViewModule {
                 $step = !empty($item['dop']['step']) ? $item['dop']['step'] : '';
                 $param = array(
                     $item['name'], $validator, $item['id'], $min, $max, $step, $val
+                );
+                break;
+            case 'Checkbox':
+                $val = $item['value'] == '1' ? ' checked="checked"':'';
+                $param = array(
+                    $item['name'], $item['id'], $val
                 );
                 break;
             default:

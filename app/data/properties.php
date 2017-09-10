@@ -110,16 +110,51 @@ class Properties extends \app\core\Model{
             $params = explode(';', $str);
             foreach ($params as $item) {
                 $x = explode('=', $item);
-                if(!isset($x[1])){
-                    var_dump($x);
-                }
                 $result[trim($x[0])] = trim($x[1]);
             }
         }
         return $result;
     }
 
-    public function UpdatePropertyValue($site, $data){
+    public function UpdatePropertiesValue($site, $data){
 
+        foreach($data as $key => $val){
+            $x = explode('-',$key);
+            if(isset($x[1])){
+                $sql = 'UPDATE `'.$this->prefix.$this->tValue.'` SET `value` = ? WHERE `id` = ?';
+                $this->SetOperData(array($val, $x[1]));
+            }
+            else{
+                $sql = 'INSERT INTO `'.$this->prefix.$this->tValue.'` (`value`, `site_id`, `property_id`) VALUES (?,?,?);';
+                $this->SetOperData(array($val, $site, $x[0]));
+            }
+            $this->Query($sql)->Run();
+        }
+    }
+
+    public function PrepareCheckBoxes($site, $data){
+        $r = $this->Select(array(
+            array('table'=>'t1', 'field' => 'id', 'label' => 'idP'),
+            array('table'=>'t2', 'field' => 'id', 'label' => 'idV'),
+        ))->
+        Binding('LEFT',$this->tValue, 'id', 'property_id')->
+        Where('`t1`.`type` = ? AND `t2`.`site_id` = ?', array(7, $site))->Build()->Run(true)->GetAll();
+
+        if(!$data){
+            $data = array();
+        }
+
+        foreach($data as &$item){
+            $item = 1;
+        }
+        unset($item);
+
+        foreach($r as  $item){
+            if(!isset($data[$item['idP'].'-'.$item['idV']])){
+                $data[$item['idP'].'-'.$item['idV']] = 0;
+            }
+        }
+
+        return $data;
     }
 }

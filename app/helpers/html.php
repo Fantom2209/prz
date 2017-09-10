@@ -165,7 +165,7 @@ class Html
         self::$html = '
             <div class="form-group">
                 <label>{{1}}:</label>
-                <input type="checkbox" id="field_{{3}}" name="UserData[{{2}}{{3}}]">
+                <input type="checkbox" id="field_{{2}}" name="CheckBoxList[{{2}}]"{{3}}>
                 <div class="error-box"></div>
             </div>
         ';
