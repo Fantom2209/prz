@@ -148,4 +148,8 @@
         private function Check_Checkbox($data){
 
         }
+
+        private function Check_Timezone($data){
+
+        }
 	}

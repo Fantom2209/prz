@@ -87,7 +87,7 @@ class Html
         self::$html = '
             <div class="form-group">
                 <label>{{1}}:</label>
-                <input class="form-control" type="text" id="field_{{3}}" name="UserData[{{2}}{{3}}]">
+                <input class="form-control" type="text" id="field_{{3}}" name="UserData[{{2}}{{3}}]" value="{{4}}">
                 <div class="error-box"></div>
             </div>
         ';
@@ -98,8 +98,31 @@ class Html
         self::$html = '
             <div class="form-group">
                 <label>{{1}}:</label>
-                <input class="form-control" type="text" id="field_{{3}}" name="UserData[{{2}}{{3}}]">
+                <input class="form-control" type="text" id="field_{{3}}" name="UserData[{{2}}{{3}}]" value="{{4}}">
                 <div class="error-box"></div>
+            </div>
+        ';
+    }
+
+    private static function Snipet_FieldPhone()
+    {
+        self::$html = '
+            <div class="factory-properties">
+                <div class="form-group main-property">
+                    <label>{{1}}:</label>
+                    <div class="col-md-9">
+                        <input class="form-control" type="text" id="field_{{3}}" name="PhoneList[{{2}}{{3}}]" value="{{4}}">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-control" id="field_{{3}}" name="TimezoneList[Timezone:{{3}}]">
+                            <option>+0</option>
+                            <option>+1</option>
+                            <option>+2</option>
+                            <option>+3</option>
+                        </select>
+                    </div>
+                    <div class="error-box"></div>
+                </div>
             </div>
         ';
     }
@@ -120,7 +143,7 @@ class Html
         self::$html = '
             <div class="form-group">
                 <label>{{1}}:</label>
-                <input class="form-control dp" type="text" id="field_{{3}}" name="UserData[{{2}}{{3}}]">
+                <input class="form-control dp" type="text" id="field_{{3}}" name="UserData[{{2}}{{3}}]" value="{{4}}">
                 <div class="error-box"></div>
             </div>
         ';
@@ -131,7 +154,7 @@ class Html
         self::$html = '
             <div class="form-group">
                 <label>{{1}}:</label>
-                <textarea class="form-control" id="field_{{3}}" name="UserData[{{2}}{{3}}]"></textarea>
+                <textarea class="form-control" id="field_{{3}}" name="UserData[{{2}}{{3}}]">{{4}}</textarea>
                 <div class="error-box"></div>
             </div>
         ';
@@ -153,7 +176,7 @@ class Html
         self::$html = '
             <div class="form-group">
                 <label>{{1}}:</label>
-                <input class="form-control" type="color" id="field_{{3}}" name="UserData[{{2}}{{3}}]">
+                <input class="form-control" type="color" id="field_{{3}}" name="UserData[{{2}}{{3}}]" value="{{4}}">
                 <div class="error-box"></div>
             </div>
         ';
@@ -164,7 +187,7 @@ class Html
         self::$html = '
             <div class="form-group">
                 <label>{{1}}:</label>
-                <select class="form-control" id="field_{{2}}" name="UserData[{{2}}]">
+                <select class="form-control" id="field_{{2}}" name="UserData[{{2}}]" value="{{4}}">
                 {{3}}
                 </select>
                 <div class="error-box"></div>

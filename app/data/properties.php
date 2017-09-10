@@ -18,9 +18,30 @@ class Properties extends \app\core\Model{
         $this->SetTable($this->tProperties);
     }
 
-    public function GetPropertyBySite($site, $property){
+    public function GetValuesBySite($site, $type){
+        $r = $this->Select(
+            array(
+                array('table' => 't1', 'field' => 'id', 'label' => 'idP'),
+                array('table' => 't2', 'field' => 'id', 'label' => 'idV'),
+                array('table' => 't2', 'field' => 'value'),
+            )
+        )->
+        Binding('LEFT', $this->tValue, 'id', 'property_id')->
+        Where('`t1`.`active` = ? AND `t2`.`site_id` = ?', array($type, $site))->OrderBy(array('`t1`.`id`'))->Build()->Run()->GetAll();
 
-        return 'data';
+        $data = array();
+        foreach($r as $item){
+            if(!isset($data[$item['idP']])){
+                $data[$item['idP']] = $item;
+            }
+            else{
+                if(isset($data[$item['idP']]['idP'])){
+                    $data[$item['idP']] = array($data[$item['idP']]);
+                }
+                $data[$item['idP']][] = $item;
+            }
+        }
+        return $data;
     }
 
     public function GetPropertyValueByName($name, $site){
@@ -39,34 +60,66 @@ class Properties extends \app\core\Model{
         $r = $this->Select(
                 array(
                     array('table' => 't1', 'field' => 'id'),
-                    array('table' => 't1', 'field' => 'name', 'label' => 'title'),
-                    array('table' => 't2', 'field' => 'name', 'label' => 'type'),
+                    array('table' => 't1', 'field' => 'name', 'label' => 'name'),
+                    array('table' => 't2', 'field' => 'name', 'label' => 'typeName'),
                     'dop',
                     'system',
-                    array('table' => 't4', 'field' => 'value'),
-                    array('table' => 't4', 'field' => 'id', 'label' => 'valueId'),
+                    array('table' => 't3', 'field' => 'name', 'label' => 'group'),
                 )
             )->
             Binding('LEFT', $this->tType, 'type', 'id')->
             Binding('LEFT', $this->tGroup, 'sGroup', 'id')->
-            Binding('LEFT', $this->tValue, 'id', 'property_id')->
-            Where('`t1`.`active` = ? AND (`t4`.`site_id` = ? or `t4`.`site_id` IS NULL)', array($type, $site))->Build()->Run()->GetAll();
+            Where('`t1`.`active` = ?', array($type))->OrderBy(array('`t1`.`sGroup`','`t1`.`id`'))->Build()->Run(true)->GetAll();
 
-        /*$data = array();
+        $v = $this->GetValuesBySite($site, $type);
+
+        // иерархия data = [группа][номер свойства][поля с данными] или если свойства дублируеться [группа][номер свойства][индекс][поля с данными]
+
+        $data = array();
         foreach($r as $item){
-            if(isset($data[$item['id']])){
-                if(isset($data[$item['id']]['id'])){
-                    $data[$item['id']] = array($data[$item['id']]);
+            $group = $item['group'];
+            $item['dop'] = $this->DecodeParams($item['dop']);
+            if(isset($v[$item['id']])){
+                if(isset($v[$item['id']]['idP'])){
+                    $item['idV'] = $v[$item['id']]['idV'];
+                    $item['value'] = $v[$item['id']]['value'];
                 }
-                $data[$item['id']][] = $item;
+                else{
+                    $arr = array();
+                    foreach($v[$item['id']] as $val){
+                        $item['idV'] = $val['idV'];
+                        $item['value'] = $val['value'];
+                        $arr[] = $item;
+                    }
+                    $item = $arr;
+                }
             }
             else{
-                $data[$item['id']] = $item;
+                $item['idV'] = null;
+                $item['value'] = null;
             }
-        }*/
+            $data[$group][] = $item;
+        }
 
-        return $r;
+        return $data;
     }
 
+    public function DecodeParams($str){
+        $result = array();
+        if(!empty($str)) {
+            $params = explode(';', $str);
+            foreach ($params as $item) {
+                $x = explode('=', $item);
+                if(!isset($x[1])){
+                    var_dump($x);
+                }
+                $result[trim($x[0])] = trim($x[1]);
+            }
+        }
+        return $result;
+    }
 
+    public function UpdatePropertyValue($site, $data){
+
+    }
 }

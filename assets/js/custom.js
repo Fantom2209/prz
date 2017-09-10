@@ -61,7 +61,6 @@ $(window).on('load', function(){
                 return 'Текущее значение: ' + value;
             }
         });
-        alert(item.getAttribute('id'));
     });
 
 });
@@ -127,11 +126,24 @@ function prepareForm(selector, data){
     });
 }
 
+function ClearTmpFields(form){
+
+}
+
 function UpdateProperties(data){
-    var form = $('#modalUpdateProperties form');
-    $.each(data,function(index,d){
-        form.find('input#field_'+ d.id).val(d.value);
-    });
+    $('#modalUpdateProperties form').html(data);
+
+    //console.log(data);
+
+    /*$.each(data,function(index,d){
+        if(prev == d.idP){
+
+        }
+        else{
+            form.find('input#field_'+ d.idP).val(d.value);
+        }
+        prev = d.idP;
+    });*/
 }
 
 function EnableProperties(data){

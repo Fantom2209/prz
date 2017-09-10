@@ -12,6 +12,9 @@
 		protected $orderby;
 		protected $limit;
 		protected $bindings;
+		private $bindingIndex;
+		private $mainIndex;
+
 		
 		protected $result;
 		protected $sql;
@@ -21,8 +24,7 @@
 		
 		public function __construct(){
 			$this->prefix = Config::DB_PREFIX;
-
-			
+            $this->DefaultTable();
 			try {
                 $this->pdo = new \PDO('mysql:host=' . Config::DB_HOST . ';dbname=' . Config::DB_NAME, Config::DB_USER, Config::DB_PASSWORD);
                 $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
@@ -58,7 +60,7 @@
 					$sql .= ', ';
  				}
 				if(is_array($item)){
-					$sql .= '`'.$this->prefix.$item['table'].'`.`'.$item['field'].'`' . (!empty($item['label'])? ' AS `'.$item['label'].'`' : '');
+					$sql .= '`'.$item['table'].'`.`'.$item['field'].'`' . (!empty($item['label'])? ' AS `'.$item['label'].'`' : '');
 				}
 				else{
 					$sql .= '`'.$item.'`';
@@ -67,14 +69,16 @@
 			if(empty($sql)){
 				$sql = '*';
 			}
-			$this->sql = 'SELECT ' . $sql . ' FROM ' . $this->prefix . $this->table;
+
+			$this->mainIndex = ++$this->bindingIndex;
+			$this->sql = 'SELECT ' . $sql . ' FROM `' . $this->prefix . $this->table . '` `t'.($this->mainIndex).'`';
 			return $this;
 		}
 		
 		public function Binding($type, $table, $fieldMain, $fieldDop, $reduction = ''){
             $this->prepared = false;
 		    if(!empty($table) && !empty($fieldMain) && !empty($fieldDop)){
-				$this->bindings[] = $type.' JOIN `'.$this->prefix .$table.'` ON `'.$this->prefix.$this->table.'`.`'.$fieldMain.'` = `'.$this->prefix.$table.'`.`'.$fieldDop.'` ' . $reduction;
+				$this->bindings[] = $type.' JOIN `'.$this->prefix .$table.'` `t'.(++$this->bindingIndex).'` ON `t'.$this->mainIndex.'`.`'.$fieldMain.'` = `t'.$this->bindingIndex.'`.`'.$fieldDop.'` ' . $reduction;
 			}
 			
 			return $this;
@@ -167,9 +171,11 @@
 			$this->orderby = '';
 			$this->limit = '';
 			$this->bindings = array();
-			$this->result = null;
+			//$this->result = null;
 			$this->sql = '';
             $this->prepared = false;
+            $this->bindingIndex = 0;
+            $this->mainIndex = 0;
 		}
 		
 		public function GetAll(){

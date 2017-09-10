@@ -8,6 +8,8 @@
     use \app\core\ErrorInfo;
     use \app\helpers\Html;
     use \app\data\Sites;
+    use \app\data\Properties;
+    use \app\lib\modules\Widget;
 
     class Site extends \app\core\Page{
 
@@ -130,12 +132,47 @@
 
         public function Property(){
             $this->response->SetContentType(Response::CONTENT_TYPE_JSON);
-            $site = new Sites();
+            $property = new Properties();
             $id = $this->request->GetData(0);
-            $data = $site->GetPropertiesValue($id);
-            if($site->IsSuccess()){
-                $data[] = array('id' => 'id', 'value' => $id);
-                $this->response->SetSuccess($data);
+            $data = $property->GetPropertiesBySite($id, 'yes');
+
+            if($property->IsSuccess()){
+                $html = '';
+                if(!$data) {
+                    $html = '<p>Доступных свойств нет!!!</p>';
+                } else {
+                    $i = 0;
+                    foreach ($data as $title => $group){
+                        $fieldsHtml = '';
+                        foreach($group as $item){
+                            if(!isset($item['id'])){
+                                $fieldsHtml .= '<div clas="factory-fields">';
+                                foreach($item as $factoryItem){
+                                    $fieldsHtml .= Widget::BuildField($factoryItem);
+                                }
+                                $fieldsHtml .= '</div>';
+                                continue;
+                            }
+
+                            $fieldsHtml .= Widget::BuildField($item);
+                        }
+
+                        if(!empty($fieldsHtml)){
+                            $html .= Html::Snipet('AccordionPanel',array(
+                                'accordion', 'accordion-panel-' . ++$i, $title, $i == 1 ? ' in' : '', $fieldsHtml
+                            ));
+                        }
+                    }
+
+                    $html = '
+                        <input type="hidden" id="field_id" name="UserData[id]">
+                        <div class="panel-group" id="accordion">' . $html .'</div>
+                        <button class="btn btn-primary">Сохранить</button>
+                    ';
+
+                 }
+
+                $this->response->SetSuccess($html);
                 $this->response->SetSuccessFunc('UpdateProperties');
             }
             else{
@@ -145,13 +182,33 @@
 
         public function PropertyPost(){
             $data = $this->request->GetData('UserData');
-            $this->validator->Validate($data);
+            $phones = $this->request->GetData('PhoneList');
+            $timezones = $this->request->GetData('TimezoneList');
+
+            $this->validator->Validate($data + $phones + $timezones);
 
             if(!$this->validator->IsValid()){
                 $this->response->SetError($this->validator->ErrorReporting());
             }
             else {
                 $data = Validator::CleanKey($data);
+                $phones = Validator::CleanKey($phones);
+                $timezones = Validator::CleanKey($timezones);
+
+                echo "<pre>";
+                var_dump($data + $phones + $timezones);
+                echo "</pre>";
+
+                $mp = array();
+                foreach($phones as $key => $val){
+                    $mp[$key] = $val . '|' . $timezones[$key];
+                }
+
+                echo "<pre>";
+                var_dump($data + $mp);
+                echo "</pre>";exit;
+
+
                 $siteId = $data['id'];
                 unset($data['id']);
                 $site = new Sites();
