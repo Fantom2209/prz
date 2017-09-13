@@ -33,6 +33,10 @@ class Request
         $this->data['__method__'] = strtolower($_SERVER['REQUEST_METHOD']);
     }
 
+    public function GetAllData(){
+        return $this->data;
+    }
+
     public function GetData($key){
         return isset($this->data[$key])?$this->data[$key]:null;
     }

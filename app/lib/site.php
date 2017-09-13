@@ -130,6 +130,18 @@
             }
         }
 
+        public function DeletePVPost(){
+            $data = Validator::CleanKey($this->request->GetData('UserData'));
+            $property = new Properties();
+            $property->DeleteValue($data);
+            if($property->IsSuccess()){
+                $this->response->SetSuccess();
+            }
+            else{
+                $this->response->SetError('Ошибка при удалении!');
+            }
+        }
+
         public function Property(){
             $this->response->SetContentType(Response::CONTENT_TYPE_JSON);
             $property = new Properties();
@@ -141,25 +153,49 @@
                 if(!$data) {
                     $html = '<p>Доступных свойств нет!!!</p>';
                 } else {
-                    $i = 0;
-                    foreach ($data as $title => $group){
+                    $j = 0;
+                    foreach ($data as $title => $group) {
                         $fieldsHtml = '';
-                        foreach($group as $item){
-                            if(!isset($item['id'])){
-                                $fieldsHtml .= '<div clas="factory-fields">';
-                                foreach($item as $factoryItem){
-                                    $fieldsHtml .= Widget::BuildField($factoryItem);
-                                }
-                                $fieldsHtml .= '</div>';
-                                continue;
+                        foreach($group as $idG => $vGroup) {
+                            $before = '';
+                            $after = '';
+                            $inGroup = '';
+
+                            switch(isset($vGroup['param']['type']) ? $vGroup['param']['type'] : ''){
+                                case 'factory':
+                                    $count = $property->Clear()->GetPropertyValueByName('factory-group-'.$idG,$id);
+                                    if(!$count){
+                                        $count = $property->Clear()->GetPropertyTagByName('default', 'factory-group-'.$idG);
+                                    }
+                                    $before = '<div class="factory-fields" data-c="'.$count.'">';
+                                    $after = '<button type="button" class="btn btn-primary add-factory-item">Добавить еще!</button></div>';
+                                    $inGroup = '<div class="delete-group-fields" title="Удалить" data-href="'.Html::ActionPath('site', 'deletepv').'">X</div>';
+                                    break;
                             }
 
-                            $fieldsHtml .= Widget::BuildField($item);
+                            $count = count($vGroup['items'][0]['values']);
+                            if($count == 0){
+                                $count = 1;
+                            }
+
+                            $htmlVGroup = '';
+                            for($i = 0; $i < $count; $i++){
+                                $htmlVGroup .= '<div class="group-items">';
+                                foreach ($vGroup['items'] as $item) {
+                                    if($count < count($item['values'])){
+                                        $count = count($item['values']);
+                                    }
+                                    $htmlVGroup .= Widget::BuildField($item['info'],  isset($item['values'][$i]) ? $item['values'][$i] : array('value' => '', 'idV' => ''));
+                                }
+                                $htmlVGroup .= $inGroup . '</div>';
+                            }
+
+                            $fieldsHtml .= $before . $htmlVGroup . $after;
                         }
 
                         if(!empty($fieldsHtml)){
                             $html .= Html::Snipet('AccordionPanel',array(
-                                'accordion', 'accordion-panel-' . ++$i, $title, $i == 1 ? ' in' : '', $fieldsHtml
+                                'accordion', 'accordion-panel-' . ++$j, $title, $j == 1 ? ' in' : '', $fieldsHtml
                             ));
                         }
                     }
@@ -181,33 +217,30 @@
         }
 
         public function PropertyPost(){
+            /*echo "<pre>";
+            var_dump($_FILES);
+            echo "</pre>";
+            echo "<pre>";
+            var_dump($_REQUEST);
+            echo "</pre>";
+            exit;*/
             $data = $this->request->GetData('UserData');
-            $phones = $this->request->GetData('PhoneList');
-            $timezones = $this->request->GetData('TimezoneList');
             $checkboxes = $this->request->GetData('CheckBoxList');
 
-            $this->validator->Validate($data + $phones + $timezones);
+            $this->validator->Validate($data);
 
             if(!$this->validator->IsValid()){
                 $this->response->SetError($this->validator->ErrorReporting());
             }
             else {
                 $data = Validator::CleanKey($data);
-                $phones = Validator::CleanKey($phones);
-                $timezones = Validator::CleanKey($timezones);
-
                 $siteId = $data['id'];
                 unset($data['id']);
-
-                $mPhones = array();
-                foreach($phones as $key => $val){
-                    $mPhones[$key] = $val . '|' . $timezones[$key];
-                }
 
                 $property = new Properties();
                 $checkboxes = $property->PrepareCheckBoxes($siteId, $checkboxes);
 
-                $property->UpdatePropertiesValue($siteId, $data + $mPhones + $checkboxes);
+                $property->UpdatePropertiesValue($siteId, $data + $checkboxes);
 
                 if ($property->IsSuccess()) {
                     $this->response->SetSuccess();

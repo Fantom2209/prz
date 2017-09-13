@@ -27,4 +27,15 @@ class Tools extends \app\core\Page {
     public function ClearLogs(){
         unlink(Config::PATH_LOG_FILE);
     }
+
+    public function FTest(){
+        $class = '\app\data\Properties';
+        $method = 'GetPropertyValueByName';
+        $param = array('factory-group-2', 12);
+        $class = new $class();
+        echo "<pre>";
+        var_dump(call_user_func_array(array($class, $method), $param));
+        echo "</pre>";
+        exit;
+    }
 }

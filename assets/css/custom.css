@@ -44,3 +44,29 @@ div[id^="field_"].slider .slider-selection {
 [id^="field_"].slider{
     width:100%;
 }
+
+.factory-fields .group-items{
+    border: 1px solid darkslateblue;
+    padding: 10px;
+    border-radius: 0 5px 5px;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.group-items .delete-group-fields{
+    position: absolute;
+    top: -13px;
+    right: -14px;
+    background-color: #ddd;
+    border-radius: 50%;
+    padding: 4px 9px;
+    color: crimson;
+    cursor: pointer;
+    border: 2px solid darkslateblue;
+    font-weight: bold;
+}
+
+.group-items .delete-group-fields:hover{
+    background-color: brown;
+    color: white;
+}

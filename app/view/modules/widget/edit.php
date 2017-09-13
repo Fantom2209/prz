@@ -10,7 +10,7 @@
             </div>
 
             <div class="modal-body">
-                <form action="<?php echo \app\helpers\Html::ActionPath('site', 'property'); ?> '" method="POST" class="ajax-form">
+                <form enctype="multipart/form-data" action="<?php echo \app\helpers\Html::ActionPath('site', 'property'); ?> '" method="POST" class="ajax-form">
 
                 </form>
             </div>

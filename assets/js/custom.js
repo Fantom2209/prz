@@ -2,13 +2,30 @@ $(window).on('load', function(){
     $('.ajax-form').on('submit', function(e){
         e.preventDefault();
 
-        var data = $(this).serialize();
+        var data = GetDataFields($(this));
 
-        /*if($(this).hasClass('recaptcha')){
-            var x = grecaptcha.getResponse();
-            //data['g-recaptcha-response'] = (x != '' ? 1 : 0);
-            console.log((x != '' ? 1 : 0));
-        }*/
+        /*var data = new FormData(), type = '', val = '';
+        $(this).find('input, select, textarea').each(function(){
+            type = $(this).attr('type');
+            switch(type){
+                case 'file':
+                    val = $(this)[0].files[0];
+                    break;
+                case 'checkbox':
+                    if($(this).attr("checked") == 'checked'){
+                        val = 'on';
+                    }
+                    break;
+                default:
+                    val = $(this).val();
+            }
+
+            if(val){
+                data.append($(this).attr('name'), val);
+            }
+
+            val = '';
+        });*/
 
         goAjax(
             'POST',
@@ -24,28 +41,71 @@ $(window).on('load', function(){
             ''
         );
     });
-    /*
-    $('.table-view').on('click', '.ajax-link', function(){
+
+    $('body').on('click', '.delete-group-fields', function(){
+        var factory = $(this).closest('.factory-fields'),
+            count = factory.find('.group-items').length,
+            group = $(this).closest('.group-items'),
+            btn = factory.find('.add-factory-item');
+
+        if(count === 1){
+            alert('Нельзя удалить последний элемент!');
+            return;
+        }
+
+        var data = GetDataFields(group);
+
         goAjax(
-            'GET',
+            'POST',
             $(this).attr('data-href'),
-            ''
+            data
         );
+
+        group.remove();
+        btn.removeClass('hidden');
     });
 
-    $('#modal-confirm').on('click', '.ajax-link', function(){
-        goAjax(
-            'GET',
-            $(this).attr('data-href'),
-            ''
-        );
-    });*/
 
-    $('.table-view').on('click', '.confirm', function(){
+    $('body').on('click', '.add-factory-item', function(){
+        var factory = $(this).closest('.factory-fields'),
+            max = factory.attr('data-c'),
+            group = factory.find('.group-items'),
+            tmp = group.first().clone(),
+            name = '',
+            time = new Date().getTime();
+
+        if(group.length >= max-1){
+            $(this).addClass('hidden');
+        }
+
+        tmp.find('input, select, textarea').each(function(){
+            type = $(this).attr('type');
+            switch(type){
+                case 'checkbox':
+                    $(this).removeAttr("checked");
+                    break;
+                default:
+                    $(this).val('');
+            }
+
+            name = $(this).attr('name').split('-');
+            if(name.length > 1){
+                $(this).attr('name',name[0] + ']');
+            }
+            $(this).attr('name').split(']');
+            if(name.length > 1){
+                $(this).attr('name',name[0] + '@' + time +']');
+            }
+        });
+
+        $(this).before(tmp);
+    });
+
+    $('body').on('click', '.confirm', function(){
         $('#modal-confirm a.go').attr('data-href',$(this).attr('data-href'));
     });
 
-    $('.table-view').on('click', '.link-line-action', function(){
+    $('body').on('click', '.link-line-action', function(){
        $(this).closest('tr').addClass('active-line');
     });
 
@@ -70,6 +130,8 @@ function goAjax(method, url, data){
         type: method,
         url: url,
         data: data,
+        processData: false,
+        contentType: false,
         success: function(data) {
             $('.ajax-form .error-box').text('');
             var obj = JSON.parse(data);
@@ -103,6 +165,32 @@ function goAjax(method, url, data){
     });
 }
 
+function GetDataFields(elem){
+    var data = new FormData(), type = '', val = '';
+    elem.find('input, select, textarea').each(function(){
+        type = $(this).attr('type');
+        switch(type){
+            case 'file':
+                val = $(this)[0].files[0];
+                break;
+            case 'checkbox':
+                if($(this).attr("checked") == 'checked'){
+                    val = 'on';
+                }
+                break;
+            default:
+                val = $(this).val();
+        }
+
+        if(val){
+            data.append($(this).attr('name'), val);
+        }
+
+        val = '';
+    });
+    return data;
+}
+
 
 function ShowCaptchaError(data){
     $('.recaptcha.error-box').text(data);
@@ -132,6 +220,14 @@ function ClearTmpFields(form){
 
 function UpdateProperties(data){
     $('#modalUpdateProperties form').html(data);
+
+    document.querySelectorAll('.number-range').forEach(function(item){
+        new Slider('#' + item.getAttribute('id'), {
+            formatter: function(value) {
+                return 'Текущее значение: ' + value;
+            }
+        });
+    });
 
     //console.log(data);
 

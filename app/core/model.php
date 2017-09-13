@@ -176,6 +176,7 @@
             $this->prepared = false;
             $this->bindingIndex = 0;
             $this->mainIndex = 0;
+            return $this;
 		}
 		
 		public function GetAll(){

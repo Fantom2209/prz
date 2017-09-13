@@ -67,7 +67,7 @@
                         <div class="error-box"></div>
                     </div>
                     <div class="form-group">
-                        <label>Параметры: (value,snippet,validator,max,min,step)</label>
+                        <label>Параметры: (value,snippet,validator,max,min,step,name,default,type)</label>
                         <input class="form-control" type="text" id="field_dop" name="UserData[dop]">
                         <div class="error-box"></div>
                     </div>
@@ -128,7 +128,7 @@
                         <div class="error-box"></div>
                     </div>
                     <div class="form-group">
-                        <label>Параметры: (value,snippet,validator,max,min,step)</label>
+                        <label>Параметры: (value,snippet,validator,max,min,step,name,default,type)</label>
                         <input class="form-control" type="text" id="field_dop" name="UserData[dop]">
                         <div class="error-box"></div>
                     </div>

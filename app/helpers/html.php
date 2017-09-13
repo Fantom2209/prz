@@ -87,7 +87,7 @@ class Html
         self::$html = '
             <div class="form-group">
                 <label>{{1}}:</label>
-                <input class="form-control" type="text" id="field_{{3}}" name="UserData[{{2}}{{3}}]" value="{{4}}">
+                <input class="form-control" type="text" name="UserData[{{2}}{{3}}]" value="{{4}}">
                 <div class="error-box"></div>
             </div>
         ';
@@ -98,7 +98,7 @@ class Html
         self::$html = '
             <div class="form-group">
                 <label>{{1}}:</label>
-                <input class="form-control" type="text" id="field_{{3}}" name="UserData[{{2}}{{3}}]" value="{{4}}">
+                <input class="form-control" type="text" name="UserData[{{2}}{{3}}]" value="{{4}}">
                 <div class="error-box"></div>
             </div>
         ';
@@ -107,23 +107,11 @@ class Html
     private static function Snipet_FieldPhone()
     {
         self::$html = '
-            <div class="factory-properties">
-                <div class="form-group main-property">
+                <div class="form-group">
                     <label>{{1}}:</label>
-                    <div class="col-md-9">
-                        <input class="form-control" type="text" id="field_{{3}}" name="PhoneList[{{2}}{{3}}]" value="{{4}}">
-                    </div>
-                    <div class="col-md-3">
-                        <select class="form-control" id="field_{{3}}" name="TimezoneList[Timezone:{{3}}]">
-                            <option>+0</option>
-                            <option>+1</option>
-                            <option>+2</option>
-                            <option>+3</option>
-                        </select>
-                    </div>
+                    <input class="form-control" type="text" name="UserData[{{2}}{{3}}]" value="{{4}}">
                     <div class="error-box"></div>
                 </div>
-            </div>
         ';
     }
 
@@ -132,7 +120,7 @@ class Html
         self::$html = '
             <div class="form-group">
                 <label>{{1}}:</label>
-                <input class="number-range" id="field_{{3}}" data-slider-id=\'field_{{3}}\' type="text" data-slider-min="{{4}}" data-slider-max="{{5}}" data-slider-step="{{6}}" data-slider-value="{{7}}" name="UserData[{{2}}{{3}}]"/>
+                <input class="number-range" id=\'field_{{3}}\' data-slider-id=\'field_{{3}}\' type="text" data-slider-min="{{4}}" data-slider-max="{{5}}" data-slider-step="{{6}}" data-slider-value="{{7}}" name="UserData[{{2}}{{3}}]"/>
                 <div class="error-box"></div>
             </div>
         ';
@@ -143,7 +131,18 @@ class Html
         self::$html = '
             <div class="form-group">
                 <label>{{1}}:</label>
-                <input class="form-control dp" type="text" id="field_{{3}}" name="UserData[{{2}}{{3}}]" value="{{4}}">
+                <input class="form-control dp" type="text" name="UserData[{{2}}{{3}}]" value="{{4}}">
+                <div class="error-box"></div>
+            </div>
+        ';
+    }
+
+    private static function Snipet_FieldImage()
+    {
+        self::$html = '
+            <div class="form-group">
+                <label>{{1}}:</label>
+                <input class="form-control" type="file" name="UserData[{{2}}{{3}}]">
                 <div class="error-box"></div>
             </div>
         ';
@@ -154,7 +153,7 @@ class Html
         self::$html = '
             <div class="form-group">
                 <label>{{1}}:</label>
-                <textarea class="form-control" id="field_{{3}}" name="UserData[{{2}}{{3}}]">{{4}}</textarea>
+                <textarea class="form-control" name="UserData[{{2}}{{3}}]">{{4}}</textarea>
                 <div class="error-box"></div>
             </div>
         ';
@@ -176,7 +175,7 @@ class Html
         self::$html = '
             <div class="form-group">
                 <label>{{1}}:</label>
-                <input class="form-control" type="color" id="field_{{3}}" name="UserData[{{2}}{{3}}]" value="{{4}}">
+                <input class="form-control" type="color" name="UserData[{{2}}{{3}}]" value="{{4}}">
                 <div class="error-box"></div>
             </div>
         ';

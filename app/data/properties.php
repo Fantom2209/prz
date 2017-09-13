@@ -7,6 +7,7 @@ class Properties extends \app\core\Model{
     private $tValue;
     private $tType;
     private $tGroup;
+    private $vGroup;
 
     public function __construct()
     {
@@ -15,6 +16,7 @@ class Properties extends \app\core\Model{
         $this->tValue = 'PropertiesValue';
         $this->tType = 'PropertyType';
         $this->tGroup = 'PropertyGroup';
+        $this->vGroup = 'PropertyValueGroup';
         $this->SetTable($this->tProperties);
     }
 
@@ -27,7 +29,7 @@ class Properties extends \app\core\Model{
             )
         )->
         Binding('LEFT', $this->tValue, 'id', 'property_id')->
-        Where('`t1`.`active` = ? AND `t2`.`site_id` = ?', array($type, $site))->OrderBy(array('`t1`.`id`'))->Build()->Run()->GetAll();
+        Where('`t1`.`active` = ? AND `t2`.`site_id` = ?', array($type, $site))->OrderBy(array('`t2`.`id`'))->Build()->Run()->GetAll();
 
         $data = array();
         foreach($r as $item){
@@ -51,54 +53,61 @@ class Properties extends \app\core\Model{
                     array('table' => 't2', 'field' => 'value'),
                 )
             )->
-            Where('`t1`.`dop` LIKE ? AND `t2`.`site_id` = ?', array('%name='.$name.'%', $site))->
-            Binding('LEFT', $this->tValue, 'id', 'property_id')->Build()->Run()->GetAll();
-        return $r;
+            Binding('LEFT', $this->tValue, 'id', 'property_id')->
+            Where('`t1`.`dop` LIKE ? AND `t2`.`site_id` = ?', array('%name='.$name.'%', $site))->Build()->Run()->GetNext();
+        return isset($r['value'])?$r['value']:'';
+    }
+
+    public function GetPropertyTagByName($tag, $name){
+        $r = $this->Select(
+            array(
+                array('table' => 't1', 'field' => 'dop'),
+            )
+        )->
+        Where('`t1`.`dop` LIKE ?', array('%name='.$name.'%'))->
+        Build()->Run()->GetNext();
+
+        $data = $this->DecodeParams($r['dop']);
+        return isset($data[$tag]) ? $data[$tag] : '';
     }
 
     public function GetPropertiesBySite($site, $type){
         $r = $this->Select(
-                array(
-                    array('table' => 't1', 'field' => 'id'),
-                    array('table' => 't1', 'field' => 'name', 'label' => 'name'),
-                    array('table' => 't2', 'field' => 'name', 'label' => 'typeName'),
-                    'dop',
-                    'system',
-                    array('table' => 't3', 'field' => 'name', 'label' => 'group'),
-                )
-            )->
-            Binding('LEFT', $this->tType, 'type', 'id')->
-            Binding('LEFT', $this->tGroup, 'sGroup', 'id')->
-            Where('`t1`.`active` = ?', array($type))->OrderBy(array('`t1`.`sGroup`','`t1`.`id`'))->Build()->Run(true)->GetAll();
+            array(
+                array('table' => 't1', 'field' => 'id'),
+                array('table' => 't1', 'field' => 'name', 'label' => 'name'),
+                array('table' => 't2', 'field' => 'name', 'label' => 'typeName'),
+                array('table' => 't1', 'field' => 'dop'),
+                'system',
+                array('table' => 't3', 'field' => 'name', 'label' => 'group'),
+                array('table' => 't1', 'field' => 'vGroup', 'label' => 'vgId'),
+                array('table' => 't4', 'field' => 'dop', 'label' => 'vgParam'),
+            )
+        )->
+        Binding('LEFT', $this->tType, 'type', 'id')->
+        Binding('LEFT', $this->tGroup, 'sGroup', 'id')->
+        Binding('LEFT', $this->vGroup, 'vGroup', 'id')->
+        Where('`t1`.`active` = ?', array($type))->OrderBy(array('`t1`.`sGroup`','`t4`.`position`','`t1`.`id`'))->Build()->Run(true)->GetAll();
 
         $v = $this->GetValuesBySite($site, $type);
-
-        // иерархия data = [группа][номер свойства][поля с данными] или если свойства дублируеться [группа][номер свойства][индекс][поля с данными]
 
         $data = array();
         foreach($r as $item){
             $group = $item['group'];
+            $vGroup = $item['vgId'];
             $item['dop'] = $this->DecodeParams($item['dop']);
+            $arr['info'] = $item;
             if(isset($v[$item['id']])){
-                if(isset($v[$item['id']]['idP'])){
-                    $item['idV'] = $v[$item['id']]['idV'];
-                    $item['value'] = $v[$item['id']]['value'];
-                }
-                else{
-                    $arr = array();
-                    foreach($v[$item['id']] as $val){
-                        $item['idV'] = $val['idV'];
-                        $item['value'] = $val['value'];
-                        $arr[] = $item;
-                    }
-                    $item = $arr;
-                }
+                $arr['values'] = $v[$item['id']];
             }
             else{
-                $item['idV'] = null;
-                $item['value'] = null;
+                $arr['values'] = array();
             }
-            $data[$group][] = $item;
+            $data[$group][$vGroup]['items'][] = $arr;
+
+            if(!isset($data[$group][$vGroup]['param'])){
+                $data[$group][$vGroup]['param'] = $this->DecodeParams($item['vgParam']);
+            }
         }
 
         return $data;
@@ -117,7 +126,6 @@ class Properties extends \app\core\Model{
     }
 
     public function UpdatePropertiesValue($site, $data){
-
         foreach($data as $key => $val){
             $x = explode('-',$key);
             if(isset($x[1])){
@@ -125,6 +133,7 @@ class Properties extends \app\core\Model{
                 $this->SetOperData(array($val, $x[1]));
             }
             else{
+                $x = explode('@',$key);
                 $sql = 'INSERT INTO `'.$this->prefix.$this->tValue.'` (`value`, `site_id`, `property_id`) VALUES (?,?,?);';
                 $this->SetOperData(array($val, $site, $x[0]));
             }
@@ -156,5 +165,16 @@ class Properties extends \app\core\Model{
         }
 
         return $data;
+    }
+
+    public function DeleteValue($data){
+        $this->SetTable($this->tValue);
+        $this->Delete()->Where('`id` = ?', array())->Build();
+        foreach($data as $key => $val){
+            $k = explode('-',$key);
+            if(isset($k[1])){
+                $this->SetOperData(array($k[1]))->Run();
+            }
+        }
     }
 }

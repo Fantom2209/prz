@@ -10,7 +10,7 @@
         <link href="<?php echo Config::URL_CSS;?>jquery-ui.min.css" rel="stylesheet">
         <script src='https://www.google.com/recaptcha/api.js'></script>
 	</head>
-	<body>
+	<body class="metro">
         <div>
             <?php
                 $this->modules->menu;
@@ -43,8 +43,26 @@
             </div>
         </div>
 
-
         <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+
+        <!--<link href="http://hayageek.github.io/jQuery-Upload-File/4.0.11/uploadfile.css" rel="stylesheet">
+        <script src="http://hayageek.github.io/jQuery-Upload-File/4.0.11/jquery.uploadfile.min.js"></script>
+
+        <div id="fileuploader">Загрузить файл</div>
+
+        <script>
+            $(document).ready(function()
+            {
+                $("#fileuploader").uploadFile({
+                    url:"YOUR_FILE_UPLOAD_URL",
+                    multiple:false,
+                    fileName:"myfile"
+                });
+            });
+        </script>
+-->
+
+
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.1/bootstrap-slider.min.js"></script>
         <script src="<?php echo Config::URL_JS; ?>jquery-ui.min.js"></script>
