@@ -1,6 +1,8 @@
 <?php
 	namespace app\helpers;
-	use \app\core\ErrorInfo;
+	use app\core\Config;
+    use \app\core\ErrorInfo;
+	use \app\data\Properties;
 	
 	class Validator{
 		private $mode;
@@ -52,7 +54,10 @@
 		}
 		
 		public function Prepare($data){		
-			return htmlspecialchars(strip_tags(stripslashes(trim($data))));
+			if(!is_array($data)){
+                $data = htmlspecialchars(strip_tags(stripslashes(trim($data))));
+            }
+		    return $data;
 		}
 		
 		public function Check($data){
@@ -151,5 +156,30 @@
 
         private function Check_Timezone($data){
 
+        }
+
+        private function Check_Image($data){
+            $x = explode('-', $this->field);
+
+            if($data['error']){
+                $this->errors[] = ErrorInfo::GetMetaErrorItem(ErrorInfo::FILE_NOT_CORRECT, array($this->field));
+                return;
+            }
+
+            $property = new Properties();
+            $size = $property->Clear()->GetPropertyTagById('size', $x[0]);
+            $type = $property->Clear()->GetPropertyTagById('type', $x[0]);
+
+            if($data['size'] > $size){
+                $this->errors[] = ErrorInfo::GetMetaErrorItem(ErrorInfo::FILE_SIZE_EXCEEDED, array($this->field));
+            }
+
+            $filename = basename($data['name']);
+            $ext = strtolower(substr($filename, strrpos($filename, '.') + 1));
+
+            $type = explode('|', $type);
+            if(!in_array($ext,$type) || Config::IMAGE_FORMAT[$ext] != $data['type']){
+                $this->errors[] = ErrorInfo::GetMetaErrorItem(ErrorInfo::FILE_NOT_CORRECT_FORMAT, array($this->field));
+            }
         }
 	}

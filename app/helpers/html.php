@@ -40,6 +40,10 @@ class Html
         return self::PrepareSnipet($data);
     }
 
+    private static function Snipet_IMG(){
+        self::$html = '<img src="{{1}}" alt="{{2}}" width="{{3}}">';
+    }
+
     private static function Snipet_UserLine()
     {
         self::$html = '
@@ -142,8 +146,11 @@ class Html
         self::$html = '
             <div class="form-group">
                 <label>{{1}}:</label>
-                <input class="form-control" type="file" name="UserData[{{2}}{{3}}]">
+                <input class="form-control" type="file" name="{{2}}{{3}}">
                 <div class="error-box"></div>
+                <div class="text-center" style="padding-top:5px;">
+                    {{4}}
+                </div>
             </div>
         ';
     }

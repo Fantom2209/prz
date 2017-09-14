@@ -33,15 +33,7 @@ class Properties extends \app\core\Model{
 
         $data = array();
         foreach($r as $item){
-            if(!isset($data[$item['idP']])){
-                $data[$item['idP']] = $item;
-            }
-            else{
-                if(isset($data[$item['idP']]['idP'])){
-                    $data[$item['idP']] = array($data[$item['idP']]);
-                }
-                $data[$item['idP']][] = $item;
-            }
+            $data[$item['idP']][] = $item;
         }
         return $data;
     }
@@ -56,6 +48,19 @@ class Properties extends \app\core\Model{
             Binding('LEFT', $this->tValue, 'id', 'property_id')->
             Where('`t1`.`dop` LIKE ? AND `t2`.`site_id` = ?', array('%name='.$name.'%', $site))->Build()->Run()->GetNext();
         return isset($r['value'])?$r['value']:'';
+    }
+
+    public function GetPropertyTagById($tag, $id){
+        $r = $this->Select(
+            array(
+                array('table' => 't1', 'field' => 'dop'),
+            )
+        )->
+        Where('`t1`.`id` = ?', array($id))->
+        Build()->Run()->GetNext();
+
+        $data = $this->DecodeParams($r['dop']);
+        return isset($data[$tag]) ? $data[$tag] : '';
     }
 
     public function GetPropertyTagByName($tag, $name){

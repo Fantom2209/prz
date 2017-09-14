@@ -23,7 +23,10 @@
         const USER_NOT_FOUND = 11;
         const USER_BANED = 12;
         const USER_NOT_ACTIVATE = 13;
-		
+        const FILE_NOT_CORRECT = 14;
+        const FILE_SIZE_EXCEEDED = 15;
+        const FILE_NOT_CORRECT_FORMAT = 16;
+
 		public static function GetMessage($code, $data = array()){
 			if(!isset(self::$messages[$code])){
 				$code = 0;
@@ -64,7 +67,10 @@
             self::USER_NOT_FOUND => 'Неверный логин или пароль',
             self::ACCESS_DENIED => 'Нет доступа к данной странице!',
             self::USER_BANED => 'Аккаунт заблокирован!',
-            self::USER_NOT_ACTIVATE => 'Збой при активации!'
+            self::USER_NOT_ACTIVATE => 'Збой при активации!',
+            self::FILE_NOT_CORRECT => 'Файл поврежден!',
+            self::FILE_SIZE_EXCEEDED => 'Файл слишком большой!',
+            self::FILE_NOT_CORRECT_FORMAT => 'Ожидаеться другой тип файла'
 		);
 		
 	}

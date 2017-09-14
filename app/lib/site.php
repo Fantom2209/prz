@@ -10,6 +10,7 @@
     use \app\data\Sites;
     use \app\data\Properties;
     use \app\lib\modules\Widget;
+    use \app\helpers\Uploder;
 
     class Site extends \app\core\Page{
 
@@ -177,14 +178,10 @@
                             if($count == 0){
                                 $count = 1;
                             }
-
                             $htmlVGroup = '';
                             for($i = 0; $i < $count; $i++){
                                 $htmlVGroup .= '<div class="group-items">';
                                 foreach ($vGroup['items'] as $item) {
-                                    if($count < count($item['values'])){
-                                        $count = count($item['values']);
-                                    }
                                     $htmlVGroup .= Widget::BuildField($item['info'],  isset($item['values'][$i]) ? $item['values'][$i] : array('value' => '', 'idV' => ''));
                                 }
                                 $htmlVGroup .= $inGroup . '</div>';
@@ -217,30 +214,41 @@
         }
 
         public function PropertyPost(){
-            /*echo "<pre>";
-            var_dump($_FILES);
-            echo "</pre>";
-            echo "<pre>";
-            var_dump($_REQUEST);
-            echo "</pre>";
-            exit;*/
+            $files = array();
+            if(count($_FILES) > 0){
+                $files = $_FILES;
+            }
+
             $data = $this->request->GetData('UserData');
             $checkboxes = $this->request->GetData('CheckBoxList');
 
-            $this->validator->Validate($data);
+            $this->validator->Validate($data + $files);
 
             if(!$this->validator->IsValid()){
                 $this->response->SetError($this->validator->ErrorReporting());
             }
             else {
                 $data = Validator::CleanKey($data);
+                $files = Validator::CleanKey($files);
                 $siteId = $data['id'];
                 unset($data['id']);
 
                 $property = new Properties();
+                $filesdb = array();
+                foreach ($files as $key => $val){
+                    $x = explode('-',$key);
+                    $filename = basename($val['name']);
+                    $ext = substr($filename, strrpos($filename, '.') + 1);
+                    $path = Config::PATH_UPLOAD . 'sites' . Config::PATH_SEPARATOR . $siteId . Config::PATH_SEPARATOR;
+                    $img = Uploder::Upload($val['tmp_name'], $path, $x[0] . '.' . $ext);
+                    if(!empty($img)){
+                        $filesdb[$key] = $img;
+                    }
+                }
+
                 $checkboxes = $property->PrepareCheckBoxes($siteId, $checkboxes);
 
-                $property->UpdatePropertiesValue($siteId, $data + $checkboxes);
+                $property->UpdatePropertiesValue($siteId, $data + $checkboxes + $filesdb);
 
                 if ($property->IsSuccess()) {
                     $this->response->SetSuccess();

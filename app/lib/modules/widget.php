@@ -66,9 +66,10 @@ class Widget extends \app\core\ViewModule {
                     $item['name'], $item['id'], $val
                 );
                 break;
-            case 'PhoneWithDelete':
+            case 'Image':
+                $val = !empty($data['value'])? Html::Snipet('IMG', array($data['value'], $item['name'], 100)) :'';
                 $param = array(
-                    $item['name'], $validator, $item['id'], $data['value'], Html::ActionPath('site', 'deletepv', array($item['id'])),
+                    $item['name'], $validator, $item['id'], $val
                 );
                 break;
             default:

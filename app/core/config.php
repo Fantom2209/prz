@@ -7,6 +7,7 @@
 		const PATH_SEPARATOR = '/';
 	    const PATH_ROOT = '/home/h8840/data/www/perezvon.foolsoft.ru' . self::PATH_SEPARATOR;
         const PATH_SOURCE = self::PATH_ROOT . 'app' . self::PATH_SEPARATOR;
+        const PATH_UPLOAD = self::PATH_ROOT . 'upload' . self::PATH_SEPARATOR;
         const PATH_RECOURCES = self::PATH_ROOT . 'assets' . self::PATH_SEPARATOR;
         const PATH_VENDOR = self::PATH_SOURCE . 'vendor' . self::PATH_SEPARATOR;
         const PATH_VIEW = self::PATH_SOURCE . 'view' . self::PATH_SEPARATOR;
@@ -35,6 +36,11 @@
 
         const RECAPTCHA_CODE = '6LewDS0UAAAAAPLyFvDl_CqHzAvdk9ZNJXblTnf4';
         const RECAPTCHA_SECRET = '6LewDS0UAAAAAPFNAKYD6tq2Rfy-NIWdb84jc4vR';
+
+        const IMAGE_FORMAT = array(
+            'jpg' => 'image/jpeg',
+            'png' => 'image/png'
+        );
 
 
     }

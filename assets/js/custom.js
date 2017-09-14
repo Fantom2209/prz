@@ -176,6 +176,7 @@ function GetDataFields(elem){
             case 'checkbox':
                 if($(this).attr("checked") == 'checked'){
                     val = 'on';
+                    console.log('on');
                 }
                 break;
             default:
