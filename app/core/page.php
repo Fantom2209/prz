@@ -19,9 +19,7 @@
 			if($this->request->GetData('__method__') == 'post'){
                 $this->response->SetContentType(Response::CONTENT_TYPE_JSON);
 			}
-			else{
-                $this->userManager->SetCurrentUser($this->request->GetActiveUser());
-            }
+            $this->userManager->SetCurrentUser($this->request->GetActiveUser());
 		}
 
 		protected function CheckAccess(){

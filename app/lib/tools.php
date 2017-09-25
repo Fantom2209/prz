@@ -30,8 +30,8 @@ class Tools extends \app\core\Page {
 
     public function FTest(){
         $class = '\app\data\Properties';
-        $method = 'GetPropertyTagById';
-        $param = array('size',8);
+        $method = 'GetParamsList';
+        $param = array();
         $class = new $class();
         echo "<pre>";
         var_dump(call_user_func_array(array($class, $method), $param));

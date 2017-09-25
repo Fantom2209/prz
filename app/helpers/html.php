@@ -97,6 +97,19 @@ class Html
         ';
     }
 
+    private static function Snipet_FieldParam()
+    {
+        self::$html = '
+            <div class="form-group input-group">
+                <span class="input-group-addon param-name">{{1}}:</span>
+                <input type="text" class="form-control" name="Params[{{2}}{{1}}]" value="{{3}}">
+                <span class="input-group-btn">
+                    <button class="btn btn-danger param-delete-btn" type="button">X</button>
+                </span>
+            </div>
+        ';
+    }
+
     private static function Snipet_FieldNumber()
     {
         self::$html = '
@@ -169,7 +182,7 @@ class Html
     private static function Snipet_FieldCheckbox()
     {
         self::$html = '
-            <div class="form-group">
+            <div class="form-group {{4}}">
                 <label>{{1}}:</label>
                 <input type="checkbox" id="field_{{2}}" name="CheckBoxList[{{2}}]"{{3}}>
                 <div class="error-box"></div>
@@ -180,7 +193,7 @@ class Html
     private static function Snipet_FieldColor()
     {
         self::$html = '
-            <div class="form-group">
+            <div class="form-group {{5}}">
                 <label>{{1}}:</label>
                 <input class="form-control" type="color" name="UserData[{{2}}{{3}}]" value="{{4}}">
                 <div class="error-box"></div>
@@ -191,11 +204,25 @@ class Html
     private static function Snipet_FieldSelect()
     {
         self::$html = '
-            <div class="form-group">
+            <div class="form-group {{8}}">
                 <label>{{1}}:</label>
-                <select class="form-control" id="field_{{2}}" name="UserData[{{2}}]" value="{{4}}">
+                <select class="form-control" id="field_{{2}}" name="UserData[{{2}}]">
                 {{3}}
                 </select>
+                <div class="error-box"></div>
+            </div>
+        ';
+    }
+
+    private static function Snipet_FieldSelectInput()
+    {
+        self::$html = '
+            <div class="form-group">
+                <label>{{1}}:</label>
+                <select class="form-control with-input" name="SelectList[{{2}}]">
+                {{3}}
+                </select>
+                <input style="margin-top:5px;" type="text" name="InputList[{{7}}{{2}}]" class="form-control{{6}}" value="{{4}}" data-active="{{5}}">
                 <div class="error-box"></div>
             </div>
         ';

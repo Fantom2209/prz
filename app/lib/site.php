@@ -147,6 +147,7 @@
             $this->response->SetContentType(Response::CONTENT_TYPE_JSON);
             $property = new Properties();
             $id = $this->request->GetData(0);
+
             $data = $property->GetPropertiesBySite($id, 'yes');
 
             if($property->IsSuccess()){
@@ -182,7 +183,7 @@
                             for($i = 0; $i < $count; $i++){
                                 $htmlVGroup .= '<div class="group-items">';
                                 foreach ($vGroup['items'] as $item) {
-                                    $htmlVGroup .= Widget::BuildField($item['info'],  isset($item['values'][$i]) ? $item['values'][$i] : array('value' => '', 'idV' => ''));
+                                    $htmlVGroup .= Widget::BuildField($item['info'],  isset($item['values'][$i]) ? $item['values'][$i] : array('value' => '', 'idV' => ''), $this->userManager->InRole(array(Users::GROUP_ADMINISTRATOR)) || $this->request->IsSuperUser());
                                 }
                                 $htmlVGroup .= $inGroup . '</div>';
                             }
@@ -200,7 +201,7 @@
                     $html = '
                         <input type="hidden" id="field_id" name="UserData[id]" value="'.$id.'">
                         <div class="panel-group" id="accordion">' . $html .'</div>
-                        <button class="btn btn-primary">Сохранить</button>
+                        <button class="btn btn-primary submit">Сохранить</button>
                     ';
 
                  }
@@ -221,8 +222,20 @@
 
             $data = $this->request->GetData('UserData');
             $checkboxes = $this->request->GetData('CheckBoxList');
+            $sl = $this->request->GetData('SelectList');
+            $il = $this->request->GetData('InputList');
 
-            $this->validator->Validate($data + $files);
+            $property = new Properties();
+
+            for(; ($val=current($sl)) != null; next($sl), next($il)){
+                $keysl = key($sl);
+                $x = explode('-', $keysl);
+                if($val == $property->Clear()->GetPropertyTagById('itemtext', $x[0])){
+                    $sl[key($il)] = current($il);
+                }
+            }
+
+            $this->validator->Validate($data + $files + $sl);
 
             if(!$this->validator->IsValid()){
                 $this->response->SetError($this->validator->ErrorReporting());
@@ -230,10 +243,11 @@
             else {
                 $data = Validator::CleanKey($data);
                 $files = Validator::CleanKey($files);
+                $sl = Validator::CleanKey($sl);
+
                 $siteId = $data['id'];
                 unset($data['id']);
 
-                $property = new Properties();
                 $filesdb = array();
                 foreach ($files as $key => $val){
                     $x = explode('-',$key);
@@ -248,10 +262,11 @@
 
                 $checkboxes = $property->PrepareCheckBoxes($siteId, $checkboxes);
 
-                $property->UpdatePropertiesValue($siteId, $data + $checkboxes + $filesdb);
+                $property->UpdatePropertiesValue($siteId, $data + $checkboxes + $filesdb + $sl);
 
                 if ($property->IsSuccess()) {
                     $this->response->SetSuccess();
+                    $this->response->SetSuccessFunc('UpdatePropertiesSuccess');
                 } else {
                     $this->response->SetError('Ошибка при обновлении!');
                 }

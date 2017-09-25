@@ -51,12 +51,12 @@
 		}
 		
 		private static $messages = array(
-			self::PAGE_NOT_FOUND => 'Страница на найдена!',
-		    self::UNDEFINED_ERROR => 'Произошла неопределенная ошибка!',
-			self::FIELD_EMPTY => 'Поле "{0}" не может быть пустым!',
-			self::FIELD_NOT_CORRECT => 'Поле "{0}" имеет некорректное значение!',
-			self::FIELD_OUT_OF_RANGE_STR => 'Некорректное кол-во символов в поле "{0}"! Минимум: {1} - Максимум: {2}!',
-			self::FIELD_OUT_OF_RANGE => 'Выход за границы диапазона в поле "{0}"! Минимум: {1} - Максимум: {2}!',
+			self::PAGE_NOT_FOUND => 'Страница на найдена',
+		    self::UNDEFINED_ERROR => 'Произошла неопределенная ошибка',
+			self::FIELD_EMPTY => 'Поле не может быть пустым',
+			self::FIELD_NOT_CORRECT => 'Поле имеет некорректное значение',
+			self::FIELD_OUT_OF_RANGE_STR => 'Некорректное кол-во символов в поле',
+			self::FIELD_OUT_OF_RANGE => 'Выход за границы диапазона',
             self::FIELD_EASY_PASSWORD => 'Слишком простой пароль, используйте латинские буквы + цифры!',
             self::FIELD_CONFIRM_PASSWORD_NOT_CORRECT => 'Пароли не совпадают!',
             self::FIELD_LOGIN_NOT_FREE => 'Аккаунт с таким логином уже существует!',

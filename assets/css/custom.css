@@ -1,5 +1,9 @@
 body { padding-top: 70px; }
 
+textarea{
+    resize: vertical;
+}
+
 .tblock{
     height: 500px;
     border:1px solid gray;
@@ -69,4 +73,37 @@ div[id^="field_"].slider .slider-selection {
 .group-items .delete-group-fields:hover{
     background-color: brown;
     color: white;
+}
+
+.client-btn{
+    width: 100px;
+    height: 100px;
+    background: black;
+    position: fixed;
+    top: 33px;
+    right: 15%;
+    color: white;
+    display: none;
+}
+
+.client-window{
+    width: 200px;
+    height: 400px;
+    background: black;
+    position: fixed;
+    top: 150px;
+    right: 10%;
+    color: white;
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    #modalUpdateProperties.modal .modal-content{
+        top: 0px;
+        left: -35%;
+    }
+
+    .client-btn, .client-window{
+        display: block;
+    }
 }

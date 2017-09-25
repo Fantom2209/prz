@@ -8,6 +8,7 @@ class Properties extends \app\core\Model{
     private $tType;
     private $tGroup;
     private $vGroup;
+    private $tParam;
 
     public function __construct()
     {
@@ -17,6 +18,7 @@ class Properties extends \app\core\Model{
         $this->tType = 'PropertyType';
         $this->tGroup = 'PropertyGroup';
         $this->vGroup = 'PropertyValueGroup';
+        $this->tParam = 'PropertyParam';
         $this->SetTable($this->tProperties);
     }
 
@@ -84,6 +86,7 @@ class Properties extends \app\core\Model{
                 array('table' => 't2', 'field' => 'name', 'label' => 'typeName'),
                 array('table' => 't1', 'field' => 'dop'),
                 'system',
+                'empty',
                 array('table' => 't3', 'field' => 'name', 'label' => 'group'),
                 array('table' => 't1', 'field' => 'vGroup', 'label' => 'vgId'),
                 array('table' => 't4', 'field' => 'dop', 'label' => 'vgParam'),
@@ -124,10 +127,25 @@ class Properties extends \app\core\Model{
             $params = explode(';', $str);
             foreach ($params as $item) {
                 $x = explode('=', $item);
-                $result[trim($x[0])] = trim($x[1]);
+                if(isset($x[1])){
+                    $result[trim($x[0])] = trim($x[1]);
+                }
             }
         }
         return $result;
+    }
+
+    public function EncodeParams($data){
+        $str = '';
+        foreach($data as $key => $item){
+            if($item === '0' || !empty($item)){
+                if(!empty($str)){
+                    $str .= ';';
+                }
+                $str .= $key . '=' . $item;
+            }
+        }
+        return $str;
     }
 
     public function UpdatePropertiesValue($site, $data){
@@ -147,7 +165,7 @@ class Properties extends \app\core\Model{
     }
 
     public function PrepareCheckBoxes($site, $data){
-        $r = $this->Select(array(
+        $r = $this->Clear()->Select(array(
             array('table'=>'t1', 'field' => 'id', 'label' => 'idP'),
             array('table'=>'t2', 'field' => 'id', 'label' => 'idV'),
         ))->
@@ -181,5 +199,23 @@ class Properties extends \app\core\Model{
                 $this->SetOperData(array($k[1]))->Run();
             }
         }
+    }
+
+    public function GetParamsList(){
+        $this->SetTable($this->tParam);
+        $r = $this->Select()->Build()->Run(true)->GetAll();
+        $this->DefaultTable();
+        return $r;
+    }
+
+    public function AddParams($data){
+        $this->SetTable($this->tParam);
+        if(!$data) {
+            $data = array();
+        }
+        foreach($data as $key => $val){
+            $this->Insert(array('name' => $key))->Run();
+        }
+        $this->Clear()->DefaultTable();
     }
 }

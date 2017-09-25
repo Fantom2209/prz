@@ -15,15 +15,19 @@ class Widget extends \app\core\ViewModule {
         $this->SetTemplate('edit');
     }
 
-    public static function BuildField($item, $data){
-        /*if($item['system'] == '1' && !($this->Get('IsSuperUser') || $this->Get('IsAdmin'))){
-            var_dump($this->Get('IsSuperUser'));
-            continue;
-        }*/
+    public static function BuildField($item, $data, $admin){
+        if($item['system'] == '1' && !$admin){
+            return '';
+        }
 
         $snippet = !empty($item['dop']['snippet']) ? $item['dop']['snippet'] : $item['typeName'];
         $validator = (!empty($item['dop']['validator']) ? $item['dop']['validator'] : $item['typeName']).':';
+        if($item['empty'] == '1'){
+            $validator = 'nn_'.$validator;
+            $item['name'] = '* '.$item['name'];
+        }
         $item['id'] .= !empty($data['idV']) ? '-' . $data['idV'] : '';
+        $classContainer = !empty($item['dop']['containerClass']) ? $item['dop']['containerClass'] : '';
 
         switch($snippet){
             case 'Timezone':
@@ -40,15 +44,19 @@ class Widget extends \app\core\ViewModule {
                     $item['name'], $item['id'], $options
                 );
                 break;
+            case 'SelectInput':
+                $hidden = $data['value'] != $item['dop']['itemtext'] ? ' hidden' :'';
+                $tvalidator = !empty($item['dop']['validatortext']) ? $item['dop']['validatortext'] . ':' : '';
             case 'Select':
+                $active = isset($item['dop']['itemtext']) ? $item['dop']['itemtext'] : '';
                 $val = !empty($item['dop']['value']) ? $item['dop']['value'] : '';
                 $elem = explode('|',$val);
                 $options = '';
-                foreach($elem as $val){
-                    $options .= '<option>'.$val.'</option>';
+                foreach($elem as $key => $val){
+                    $options .= '<option value="'.$key.'"'.($data['value'] == $key ? ' selected':'').'>'.$val.'</option>';
                 }
                 $param = array(
-                    $item['name'], $item['id'], $options
+                    $item['name'], $item['id'], $options, $data['value'], $active, isset($hidden)?$hidden:'',isset($tvalidator)?$tvalidator:'', $classContainer
                 );
                 break;
             case 'Range':
@@ -63,7 +71,7 @@ class Widget extends \app\core\ViewModule {
             case 'Checkbox':
                 $val = $data['value'] == '1' ? ' checked="checked"':'';
                 $param = array(
-                    $item['name'], $item['id'], $val
+                    $item['name'], $item['id'], $val, $classContainer
                 );
                 break;
             case 'Image':
@@ -74,7 +82,7 @@ class Widget extends \app\core\ViewModule {
                 break;
             default:
                 $param = array(
-                    $item['name'], $validator, $item['id'], $data['value']
+                    $item['name'], $validator, $item['id'], $data['value'], $classContainer
                 );
         }
 

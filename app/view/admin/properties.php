@@ -2,7 +2,7 @@
 <div class="row">
 
         <div class="col-md-12">
-            <a href="#modalAddProperty" data-toggle="modal" class="btn btn-primary">Добавить свойство</a>&nbsp;&nbsp;
+            <a href="#modalAddProperty" data-toggle="modal" class="btn btn-primary ajax-link" data-href="<?php echo Html::ActionPath('siteproperties', 'add')?>">Добавить свойство</a>&nbsp;&nbsp;
             <a href="#modalEnableProperty" data-toggle="modal" class="btn btn-primary ajax-link" data-href="<?php echo Html::ActionPath('siteproperties', 'enable')?>">Активация/Деактивация</a>
             <table class="table table-view">
                 <tr>
@@ -66,9 +66,13 @@
                         </select>
                         <div class="error-box"></div>
                     </div>
+                    <div id="param-panel">
+
+                    </div>
+
                     <div class="form-group">
-                        <label>Параметры: (value,snippet,validator,max,min,step,name,default,type)</label>
-                        <input class="form-control" type="text" id="field_dop" name="UserData[dop]">
+                        <label>Обязательно:</label>
+                        <input type="checkbox" id="field_empty" name="UserData[empty]">
                         <div class="error-box"></div>
                     </div>
                     <div class="form-group">
@@ -127,11 +131,18 @@
                         </select>
                         <div class="error-box"></div>
                     </div>
+
+
+                    <div id="param-panel">
+
+                    </div>
+
                     <div class="form-group">
-                        <label>Параметры: (value,snippet,validator,max,min,step,name,default,type)</label>
-                        <input class="form-control" type="text" id="field_dop" name="UserData[dop]">
+                        <label>Обязательно:</label>
+                        <input type="checkbox" id="field_empty" name="UserData[empty]">
                         <div class="error-box"></div>
                     </div>
+
                     <div class="form-group">
                         <label>Системный:</label>
                         <input type="checkbox" id="field_system" name="UserData[system]">

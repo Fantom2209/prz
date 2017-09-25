@@ -3,6 +3,7 @@ namespace app\lib;
 use \app\data\Users;
 use \app\data\Sites;
 use \app\lib\modules\Menu;
+use \app\data\Properties;
 
 class Admin extends \app\core\Page{
 
@@ -35,7 +36,7 @@ class Admin extends \app\core\Page{
         $site = new Sites();
         $propertiesType = $site->GetPropertiestType();
         $propertiesGroup = $site->GetPropertiesGroup();
-
+        
         $this->response->Set('properties',$site->GetProperties());
         $this->response->Set('PropertiesType',$propertiesType);
         $this->response->Set('PropertiesGroup',$propertiesGroup);
