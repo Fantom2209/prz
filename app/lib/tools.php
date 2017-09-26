@@ -3,7 +3,9 @@
 namespace app\lib;
 use \app\core\Config;
 
-
+/**
+ * @group(ADMINISTRATOR)
+ */
 class Tools extends \app\core\Page {
 
     public function __construct($controller, $action){
@@ -29,9 +31,9 @@ class Tools extends \app\core\Page {
     }
 
     public function FTest(){
-        $class = '\app\data\Properties';
-        $method = 'GetParamsList';
-        $param = array();
+        $class = '\app\data\Sites';
+        $method = 'CheckOwner';
+        $param = array('1','12');
         $class = new $class();
         echo "<pre>";
         var_dump(call_user_func_array(array($class, $method), $param));

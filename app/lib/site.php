@@ -100,6 +100,13 @@
                 $id = $data['id'];
                 unset($data['id']);
                 $site = new Sites();
+
+                if(!$site->CheckOwner($this->userManager->Get('UserId'),$id)){
+                    $this->response->SetErrorFunc('ErrorAlert');
+                    $this->response->SetError(ErrorInfo::GetMessage(ErrorInfo::ACCESS_DENIED_FOR_RESOURCES));
+                    $this->response->Go();
+                }
+
                 $site->Update($data, '`id` = ?', array($id))->Run();
                 if ($site->IsSuccess()) {
                     $item = $site->GetElementByField('id', $id);
@@ -248,9 +255,15 @@
                 $data = Validator::CleanKey($data);
                 $files = Validator::CleanKey($files);
                 $sl = Validator::CleanKey($sl);
-
                 $siteId = $data['id'];
                 unset($data['id']);
+
+                $site = new Sites();
+                if(!$site->CheckOwner($this->userManager->Get('UserId'),$siteId)){
+                    $this->response->SetErrorFunc('ErrorAlert');
+                    $this->response->SetError(ErrorInfo::GetMessage(ErrorInfo::ACCESS_DENIED_FOR_RESOURCES));
+                    $this->response->Go();
+                }
 
                 $filesdb = array();
                 foreach ($files as $key => $val){

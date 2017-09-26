@@ -117,4 +117,8 @@
             }
             return $result;
         }
+
+        public function CheckOwner($idUser, $idSite){
+            return $this->Select()->Where('`id` = ? AND id_user = ?', array($idSite, $idUser))->Build()->Run(true)->CountResult();
+        }
     }
