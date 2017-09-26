@@ -19,7 +19,7 @@
 
 
 	    const URL_ROOT = 'http://perezvon.foolsoft.ru';
-        const URL_IMG = self::URL_ROOT . '/assets/images/';
+        const URL_IMG = self::URL_ROOT . '/assets/img/';
         const URL_CSS = self::URL_ROOT . '/assets/css/';
         const URL_JS = self::URL_ROOT . '/assets/js/';
 

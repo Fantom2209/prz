@@ -67,7 +67,7 @@ class Html
                 <td><span>{{2}}</span></td>
                 <td><span>{{3}}</span></td>
                 <td><a href="#modalUpdateSite" data-toggle="modal" class="ajax-link link-line-action" data-href="{{4}}">Редактировать</a></td>
-                <td><a href="#modalUpdateProperties" data-toggle="modal" class="ajax-link" data-href="{{5}}" >Свойства</a></td>
+                <td><a href="#modalUpdateProperties" data-toggle="modal" class="ajax-link add-preloader" data-href="{{5}}" >Свойства</a></td>
                 <td><a href="#modal-confirm" data-toggle="modal" class="link-line-action confirm" data-href="{{6}}">Удалить</a></td>
                 <td><a href="#" class="ajax-link link-line-action" data-href="{{8}}">{{9}}</a></td>
             </tr>

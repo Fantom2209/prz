@@ -119,6 +119,10 @@ $(window).on('load', function(){
        $(this).closest('tr').addClass('active-line');
     });
 
+    $('body').on('click' , '.add-preloader', function(){
+        $($(this).attr('href')).find('form').html('<div class="text-center"><img src="/assets/img/loader.gif"></div>');
+    });
+
     $('.modal .close, .modal .clear-active').on('click', function(){
         $('.active-line').removeClass('active-line');
     });
