@@ -8,6 +8,9 @@ use \app\helpers\Validator;
 use \app\helpers\Html;
 use \app\data\Sites;
 
+/**
+ * @group(ADMINISTRATOR)
+ */
 class SiteProperties extends \app\core\Page
 {
     private $validator;

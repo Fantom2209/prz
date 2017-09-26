@@ -5,6 +5,7 @@
 
         const PAGE_NOT_FOUND = 404;
         const ACCESS_DENIED = 500;
+        const ACCESS_DENIED_FOR_RESOURCES = 501;
 	    const UNDEFINED_ERROR = 0;
 		
 		const FIELD_EMPTY = 1;
@@ -26,6 +27,7 @@
         const FILE_NOT_CORRECT = 14;
         const FILE_SIZE_EXCEEDED = 15;
         const FILE_NOT_CORRECT_FORMAT = 16;
+        const USER_COOKIES_MODIFIED = 17;
 
 		public static function GetMessage($code, $data = array()){
 			if(!isset(self::$messages[$code])){
@@ -66,11 +68,13 @@
             self::DB_PREPARE_QUERY => 'Ошибка при формировании запроса к базе данных',
             self::USER_NOT_FOUND => 'Неверный логин или пароль',
             self::ACCESS_DENIED => 'Нет доступа к данной странице!',
+            self::ACCESS_DENIED_FOR_RESOURCES => 'Нет доступа к данным ресурсам!',
             self::USER_BANED => 'Аккаунт заблокирован!',
             self::USER_NOT_ACTIVATE => 'Збой при активации!',
             self::FILE_NOT_CORRECT => 'Файл поврежден!',
             self::FILE_SIZE_EXCEEDED => 'Файл слишком большой!',
-            self::FILE_NOT_CORRECT_FORMAT => 'Ожидаеться другой тип файла'
+            self::FILE_NOT_CORRECT_FORMAT => 'Ожидаеться другой тип файла',
+            self::USER_COOKIES_MODIFIED => 'Данные сеанса повреждены. Войдите в систему заново',
 		);
 		
 	}

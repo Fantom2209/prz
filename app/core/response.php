@@ -47,6 +47,10 @@ class Response{
         $this->contentType = $code;
     }
 
+    public function GetContentType(){
+        return $this->contentType;
+    }
+
     public function SetContent($data){
         $this->data['content'] = $data;
     }

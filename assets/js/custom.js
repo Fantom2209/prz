@@ -556,3 +556,7 @@ function AddLine(data, top){
         view.append(data);
     }
 }
+
+function ErrorAlert(data){
+    alert('Ошибка: ' + data);
+}

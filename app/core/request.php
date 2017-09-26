@@ -41,7 +41,7 @@ class Request
         return isset($this->data[$key])?$this->data[$key]:null;
     }
 
-    public function IsAuthorized(){
+    /*public function IsAuthorized(){
         return isset($_COOKIE['UserId']);
     }
 
@@ -65,6 +65,6 @@ class Request
         }
         $result['UserIP'] = Users::GetIP();
         return $result;
-    }
+    }*/
 
 }

@@ -7,7 +7,6 @@
 	class Error extends \app\core\Page{
 					
 		public function Index(){
-
 		    $this->response->SetLayout(Config::PATH_LAYOUT . 'errorLayout.php');
 			$this->response->Set('title','Произошла ошибка');
 			$this->response->Set('code','Ошибка с кодом: ' . $this->request->GetData(0));

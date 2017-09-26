@@ -10,6 +10,9 @@
 	use \app\helpers\Html;
 	use \app\helpers\VendorManager;
 
+    /**
+     * @group(ADMINISTRATOR)
+     */
 	class Account extends \app\core\Page{
         private $validator;
 
@@ -18,6 +21,9 @@
             $this->validator = new Validator();
         }
 
+        /**
+         * @group(GUEST)
+         */
         public function CreatePost(){
             $data = $this->request->GetData('UserData');
 			$this->validator->Validate($data);
@@ -81,7 +87,11 @@
 
         }
 
+        /**
+         * @group(GUEST)
+         */
 		public function LoginPost(){
+
             $data = $this->request->GetData('UserData');
             $this->validator->Validate($data);
 
@@ -122,8 +132,6 @@
                     return;
                 }
 
-
-
                 $data = Validator::CleanKey($data);
                 $user = new Users();
                 $user->GetUser($data['email'], $data['password']);
@@ -140,9 +148,13 @@
                 }
             }
         }
-		
+
+        /**
+         * @group(ADMINISTRATOR,CLIENT)
+         */
 		public function Logout(){
-			Users::Logout();
+			$user = new Users();
+		    $user->Logout();
 			$this->response->Redirect();
 		}
 
@@ -229,8 +241,8 @@
 
         public function Upcast(){
             $id = $this->userManager->Get('BaseId');
-            Users::Logout();
             $user = new Users();
+            $user->Logout();
             $user->GetUserById($id);
             $user->Login();
             if($user->IsSuccess()){
@@ -241,6 +253,9 @@
             }
         }
 
+        /**
+         * @group()
+         */
         public function Activate(){
             $user = new Users();
             $user->Activate($this->request->GetData(0),$this->request->GetData(1));

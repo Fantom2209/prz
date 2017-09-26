@@ -19,13 +19,32 @@
 			if($this->request->GetData('__method__') == 'post'){
                 $this->response->SetContentType(Response::CONTENT_TYPE_JSON);
 			}
-            $this->userManager->SetCurrentUser($this->request->GetActiveUser());
 		}
 
-		protected function CheckAccess(){
-            if($this->request->GetData('__method__') != 'post') {
-                if (!$this->userManager->HasAccess()) {
-                    Loger::Write(ErrorInfo::GetMessage(ErrorInfo::ACCESS_DENIED), ErrorInfo::ACCESS_DENIED);
+		public function CheckAccess($meta){
+		    if($this->userManager->IsAuthorized()){
+		        if(!$this->userManager->HasRealUser()){
+                    Loger::Write(ErrorInfo::GetMessage(ErrorInfo::USER_COOKIES_MODIFIED) . ' (session_id not correct)', ErrorInfo::USER_COOKIES_MODIFIED);
+                    $user = new Users();
+                    $user->Logout();
+                    if($this->response->GetContentType() == Response::CONTENT_TYPE_JSON){
+                        $this->response->SetRedirect(Html::ActionPath('error', 'index', array(ErrorInfo::USER_COOKIES_MODIFIED)));
+                        $this->response->Go();
+                    }
+                    else{
+                        $this->response->GenerateError(ErrorInfo::USER_COOKIES_MODIFIED);
+                    }
+                }
+            }
+
+		    if (!$this->userManager->HasAccess($meta)) {
+                Loger::Write(ErrorInfo::GetMessage(ErrorInfo::ACCESS_DENIED), ErrorInfo::ACCESS_DENIED);
+                if($this->response->GetContentType() == Response::CONTENT_TYPE_JSON){
+                    $this->response->SetError(ErrorInfo::GetMessage(ErrorInfo::ACCESS_DENIED_FOR_RESOURCES));
+                    $this->response->SetErrorFunc('ErrorAlert');
+                    $this->response->Go();
+                }
+                else{
                     $this->response->GenerateError(ErrorInfo::ACCESS_DENIED);
                 }
             }

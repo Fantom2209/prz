@@ -4,19 +4,22 @@ use \app\data\Users;
 use \app\data\Sites;
 use \app\lib\modules\Menu;
 use \app\data\Properties;
+use \app\core\UsersManager;
 
+
+/**
+ * @group(ADMINISTRATOR)
+ */
 class Admin extends \app\core\Page{
 
     public function __construct($controller, $action){
         parent::__construct($controller, $action);
-        $this->userManager->DeleteUserGroup(array(Users::GROUP_GUEST, Users::GROUP_CLIENT));
-        $this->CheckAccess();
 
         $menu = $this->response->modules->Add('menu');
         $menu->Init(Menu::TYPE_ADMIN_MAIN);
         $menu->SetBrand('Панель администратора');
-        $menu->Set('IsAuth', $this->request->IsAuthorized());
-        $menu->Set('IsAdmin',$this->userManager->InRole(array(Users::GROUP_ADMINISTRATOR)));
+        $menu->Set('IsAuth', $this->userManager->IsAuthorized());
+        $menu->Set('IsAdmin',$this->userManager->InRole(array(UsersManager::GROUP_ADMINISTRATOR)));
         $menu->Set('AccountName', $this->userManager->Get('UserName'));
         $menu->Set('IsActive', $this->userManager->IsActive());
     }

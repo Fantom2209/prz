@@ -5,14 +5,11 @@
 
     class Users extends \app\core\Model{
 
-        const GROUP_ADMINISTRATOR = 1;
-        const GROUP_CLIENT = 2;
-        const GROUP_GUEST = 0;
-        const GROUP_DEVELOPER = 3;
-
 	    private $id;
 	    private $email;
 	    private $role;
+
+	    private $current;
 
 	    private $roleTable;
 
@@ -25,64 +22,83 @@
             return 0 == $this->GetCount($email, 'email');
         }
 
+        public function GetSessionId($id){
+            return MD5($this->GetIp() . time() . $id . Config::APP_SECRET);
+        }
+
 	    public function HashPassword($pass){
 	        return MD5(MD5($pass . Config::APP_SECRET));
         }
 
+        private function SetSessionId($idUser, $idSession){
+	        $this->Update(array('session_id'=>$idSession), '`id` = ?', array($idUser))->Run(true);
+        }
+
         public function GetUser($email, $password){
-	        $data = $this->Select(array('id', 'email', 'name', 'role_id'))->Where('`email` = ? and `password` = ?', array($email, $this->HashPassword($password)))->Build()->Run()->GetNext();
+	        $data = $this->Select(array('id', 'email', 'name', 'role_id', 'session_id'))->Where('`email` = ? and `password` = ?', array($email, $this->HashPassword($password)))->Build()->Run()->GetNext();
 	        $this->SetUser($data);
         }
 
         public function GetUserById($id){
-            $data = $this->Select(array('id', 'email', 'name', 'role_id'))->Where('`id` = ?', array($id))->Build()->Run()->GetNext();
+            $data = $this->Select(array('id', 'email', 'name', 'role_id', 'session_id'))->Where('`id` = ?', array($id))->Build()->Run(true)->GetNext();
             $this->SetUser($data);
         }
 
 
         private function SetUser($data){
-            $this->id = !empty($data['id']) ? $data['id'] : '';
-            $this->email = !empty($data['email']) ? $data['email'] : '';
-            $this->name = !empty($data['name']) ? $data['name'] : '';
-            $this->role = !empty($data['role_id']) ? $data['role_id'] : '';
+            $this->current = $data;
+        }
+
+        public function Get($key){
+            return isset($this->current[$key])?$this->current[$key]:'';
         }
 
         public function IsUser(){
-            return $this->id != false;
+            return !empty($this->Get('id'));
         }
 
-        public function Login(){
+        public function Login($super = false){
             $time = time()+ 3600 * 24 * 7;
-            setcookie('UserId', $this->id, $time,'/');
-            setcookie('UserName', $this->name, $time, '/');
-            setcookie('UserRole', $this->role, $time, '/');
+            if(!$super){
+                $session = $this->GetSessionId($this->Get('id'));
+                $this->SetSessionId($this->Get('id'), $session);
+                setcookie('Session', $session, $time,'/');
+            }
+            setcookie('UserId', $this->Get('id'), $time,'/');
+            setcookie('UserName', $this->Get('name'), $time, '/');
         }
 
         public function SuperLogin($id, $name){
             setcookie('BaseId', $id, time()+ 3600 * 24 * 7,'/');
             setcookie('BaseName', $name, time()+ 3600 * 24 * 7,'/');
-            $this->Login();
+            $this->Login(true);
         }
 
-        public static function Logout(){
+        public function Logout(){
+            if(self::ActiveUserInfo('BaseId')){
+                $this->SetSessionId(self::ActiveUserInfo('BaseId'), '');
+            }else{
+                $this->SetSessionId(self::ActiveUserInfo('UserId'), '');
+            }
+
             setcookie('UserId', '', time() - 3600, '/');
             setcookie('BaseId', '', time() - 3600, '/');
             setcookie('BaseName', '', time() - 3600, '/');
             setcookie('UserName', '', time() - 3600, '/');
-            setcookie('UserRole', '', time() - 3600, '/');
+            setcookie('Session', '', time() - 3600, '/');
         }
 
-        public static function InRole($role = array()){
+        /*public static function InRole($role = array()){
             $active = self::ActiveUserInfo('UserRole');
             return in_array($active ? $active : 0, $role);
-        }
+        }*/
 
         public static function IsAuthorized(){
-            return $_COOKIE['UserId'] != false;
+            return  !empty(self::ActiveUserInfo('UserId'));
         }
 
         public static function ActiveUserInfo($key){
-            return $_COOKIE[$key];
+            return !empty($_COOKIE[$key]) ? $_COOKIE[$key] : null;
         }
 
         public static function GetIP(){

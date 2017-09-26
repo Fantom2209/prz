@@ -3,6 +3,7 @@
 
     use app\core\Config;
     use app\core\Response;
+    use app\core\UsersManager;
     use app\data\Users;
     use \app\helpers\Validator;
     use \app\core\ErrorInfo;
@@ -12,6 +13,9 @@
     use \app\lib\modules\Widget;
     use \app\helpers\Uploder;
 
+    /**
+     * @group(ADMINISTRATOR,CLIENT)
+     */
     class Site extends \app\core\Page{
 
         private $validator;
@@ -183,7 +187,7 @@
                             for($i = 0; $i < $count; $i++){
                                 $htmlVGroup .= '<div class="group-items">';
                                 foreach ($vGroup['items'] as $item) {
-                                    $htmlVGroup .= Widget::BuildField($item['info'],  isset($item['values'][$i]) ? $item['values'][$i] : array('value' => '', 'idV' => ''), $this->userManager->InRole(array(Users::GROUP_ADMINISTRATOR)) || $this->request->IsSuperUser());
+                                    $htmlVGroup .= Widget::BuildField($item['info'],  isset($item['values'][$i]) ? $item['values'][$i] : array('value' => '', 'idV' => ''), $this->userManager->InRole(array(UsersManager::GROUP_ADMINISTRATOR)) || $this->userManager->IsSuperUser());
                                 }
                                 $htmlVGroup .= $inGroup . '</div>';
                             }
