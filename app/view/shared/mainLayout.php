@@ -5,10 +5,14 @@
 	<head>
 		<title><?php echo $this->Get('title');?></title>
 		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+		<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 		<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.1/css/bootstrap-slider.min.css" rel="stylesheet">
         <link href="<?php echo Config::URL_CSS;?>custom.css" rel="stylesheet">
         <link href="<?php echo Config::URL_CSS;?>jquery-ui.min.css" rel="stylesheet">
         <link href="<?php echo Config::URL_CSS;?>spectrum.css" rel="stylesheet">
+        <link href="<?php echo Config::URL_CSS;?>alertifyjs/alertify.min.css" rel="stylesheet">
+        <link href="<?php echo Config::URL_CSS;?>alertifyjs/bootstrap.min.css" rel="stylesheet">
+
         <script src='https://www.google.com/recaptcha/api.js'></script>
 	</head>
 	<body class="metro">
@@ -49,7 +53,10 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.1/bootstrap-slider.min.js"></script>
         <script src="<?php echo Config::URL_JS; ?>jquery-ui.min.js"></script>
         <script src="<?php echo Config::URL_JS; ?>spectrum.js"></script>
+        <script src="<?php echo Config::URL_JS; ?>alertifyjs/alertify.min.js"></script>
         <script src="<?php echo Config::URL_JS; ?>custom.js"></script>
 
+
+        <script src="https://perezvon.foolsoft.ru/widget/index1/5328b40a10b8f27cbe1cbba922649df6/"></script>
     </body>
 </html>

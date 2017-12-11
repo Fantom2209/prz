@@ -197,7 +197,14 @@
             $ext = strtolower(substr($filename, strrpos($filename, '.') + 1));
 
             $type = explode('|', $type);
-            if(!in_array($ext,$type) || Config::IMAGE_FORMAT[$ext] != $data['type']){
+
+
+            $img_info = @getimagesize($data['tmp_name']);
+            if(empty($img_info['mime'])){
+                $img_info['mime'] = null;
+            }
+
+            if(!in_array($ext,$type) || Config::IMAGE_FORMAT[$ext] != $data['type'] || $img_info['mime'] != Config::IMAGE_FORMAT[$ext]){
                 $this->errors[] = ErrorInfo::GetMetaErrorItem(ErrorInfo::FILE_NOT_CORRECT_FORMAT, array($this->key));
             }
         }

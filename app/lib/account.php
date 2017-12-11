@@ -16,8 +16,8 @@
 	class Account extends \app\core\Page{
         private $validator;
 
-        public function __construct($controller, $action){
-            parent::__construct($controller, $action);
+        public function __construct($controller, $action, $meta){
+            parent::__construct($controller, $action, $meta);
             $this->validator = new Validator();
         }
 
@@ -180,6 +180,9 @@
             }
         }
 
+        /**
+         * @content(CONTENT_TYPE_JSON)
+         */
         public function Update(){
             $this->response->SetContentType(Response::CONTENT_TYPE_JSON);
             $user = new Users();

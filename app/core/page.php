@@ -2,6 +2,7 @@
 	namespace app\core;
     use app\data\Users;
     use \app\helpers\Loger;
+    use \app\helpers\Html;
 
 	class Page{
 
@@ -12,21 +13,32 @@
 
 		protected $userManager;
 
-		public function __construct($controller, $action){
+		public function __construct($controller, $action, $meta){
 			$this->request = new Request();
 			$this->response = new Response($controller, $action);
             $this->userManager = new UsersManager();
 			if($this->request->GetData('__method__') == 'post'){
                 $this->response->SetContentType(Response::CONTENT_TYPE_JSON);
 			}
+
+			$this->response->ChechContentType($meta); // задать новый тип контента, если он задан в анотации вызываемого метода
+			$this->CheckAccess($meta);
 		}
 
 		public function CheckAccess($meta){
+
 		    if($this->userManager->IsAuthorized()){
 		        if(!$this->userManager->HasRealUser()){
                     Loger::Write(ErrorInfo::GetMessage(ErrorInfo::USER_COOKIES_MODIFIED) . ' (session_id not correct)', ErrorInfo::USER_COOKIES_MODIFIED);
                     $user = new Users();
-                    $user->Logout();
+
+                    if($this->userManager->IsSuperUser()){
+                        $user->Logout(true);
+                    }
+                    else{
+                        $user->Logout();
+                    }
+
                     if($this->response->GetContentType() == Response::CONTENT_TYPE_JSON){
                         $this->response->SetRedirect(Html::ActionPath('error', 'index', array(ErrorInfo::USER_COOKIES_MODIFIED)));
                         $this->response->Go();

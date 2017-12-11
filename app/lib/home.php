@@ -5,8 +5,8 @@
 	
 	class Home extends \app\core\Page{
 
-	    public function __construct($controller, $action){
-            parent::__construct($controller, $action);
+	    public function __construct($controller, $action, $meta){
+            parent::__construct($controller, $action, $meta);
         }
 
         public function Index(){
@@ -20,11 +20,6 @@
 
 			$this->response->Set('title','Главная страница');
 			$this->response->Set('content','Информация с главной страницы');
-		}
-		
-		public function Users(){
-			$this->Set('title','Пользователи');
-			$this->Set('content','Список пользователей');
 		}
 
 	}

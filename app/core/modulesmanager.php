@@ -16,9 +16,9 @@ class ModulesManager
         return null;
     }
 
-    public function Add($name){
+    public function Add($name, $params = array()){
         $m = '\app\lib\modules\\' . $name;
-        $this->modules[$name] = new $m();
+        $this->modules[$name] = new $m($params);
         return $this->modules[$name];
     }
 

@@ -1,6 +1,8 @@
 <?php
 namespace app\data;
 
+use \app\helpers\Functions;
+
 class Properties extends \app\core\Model{
 
     private $tProperties;
@@ -76,6 +78,14 @@ class Properties extends \app\core\Model{
 
         $data = $this->DecodeParams($r['dop']);
         return isset($data[$tag]) ? $data[$tag] : '';
+    }
+
+    public function GetPropertyInfoByCodeName($name){
+        $r = $this->Select()->
+        Where('`t1`.`dop` LIKE ?', array('%codeName='.$name.'%'))->
+        Build()->Run()->GetNext();
+
+        return isset($r['id']) ? $r : '';
     }
 
     public function GetPropertiesBySite($site, $type){
@@ -218,4 +228,155 @@ class Properties extends \app\core\Model{
         }
         $this->Clear()->DefaultTable();
     }
+
+    public function GetManagersList($data){
+        $data = !empty($data['Настройка звонков'][2]['items']) ? $data['Настройка звонков'][2]['items'] : array();
+
+        $result = array();
+        foreach($data as $item){
+            if(empty($item['info']['dop']['codeName']) || empty($item['values'])){
+                continue;
+            }
+
+            $i = 0;
+            foreach($item['values'] as $val){
+                if(!isset($result[$i])){
+                    $result[$i] = array();
+                }
+                $result[$i++][$item['info']['dop']['codeName']] = $val['value'];
+            }
+        }
+        return $result;
+    }
+
+    public function GetBranchList($data){
+        $data = $this->GetManagersList($data);
+        $result = array();
+        foreach($data as $item){
+            $key = empty($item['branch']) ? 'default' : Functions::ChpuUrl($item['branch']);
+            if(empty($result[$key]['tz'])){
+                $result[$key]['tz'] = $item['timezone'];
+            }
+            if(empty($result[$key]['ru'])){
+                $result[$key]['ru'] = $item['branch'];
+            }
+
+            $result[$key]['managers'][] = $item;
+        }
+        return $result;
+    }
+
+    public function GetRandomManager($branch = 'default', $data = array()){
+
+        if(empty($data[$branch]) || ($countManagers = count($data[$branch]['managers'])) === 0){
+            return null;
+        }
+
+        return $data[$branch]['managers'][$countManagers - 1 == 0 ? 0 : rand(0,$countManagers - 1)];
+    }
+
+    public function GetRandomManagerWithEmail($branch = 'default', $data = array()){
+        if(empty($data[$branch]) || ($countManagers = count($data[$branch]['managers'])) === 0){
+            return null;
+        }
+
+        shuffle($data[$branch]['managers']);
+
+        foreach($data[$branch] as $item){
+            if(!empty($item['email'])){
+                return $item;
+            }
+        }
+
+        return array();
+    }
+
+    public function GetBranchListWithEmail($data = array()){
+
+        if(count($data) == 0){
+            return array();
+        }
+
+        $result = array();
+
+        foreach($data as $key => $item){
+            foreach($item as $subItem){
+                if(!empty($subItem['email'])){
+                    $result[] = array('value' => $key, 'title' => !empty($subItem['branch']) ? $subItem['branch'] : 'Без филиала');
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    private function GetSettingList($data){
+        $result = array();
+
+        foreach($data as $item){
+            if(empty($item['info']['dop']['codeName']) || empty($item['values'])){
+                continue;
+            }
+
+            foreach($item['values'] as $val){
+                $result[$item['info']['dop']['codeName']] = $val['value'];
+            }
+        }
+
+        return $result;
+    }
+
+    public function GetBtnSettings($data = array()){
+        $data = !empty($data['Внешний вид кнопки заказа']) ? $data['Внешний вид кнопки заказа'] : array();
+        $settingsList = array();
+
+        foreach($data as $group){
+            foreach($group['items'] as $item){
+                $settingsList[] = $item;
+            }
+        }
+
+        return $this->GetSettingList($settingsList);
+    }
+
+    public function GetReportsSettings($data = array()){
+        $data = !empty($data['Отчеты и уведомления'][1]['items']) ? $data['Отчеты и уведомления'][1]['items'] : array();
+        return $this->GetSettingList($data);
+    }
+
+    public function GetWindowSettings($data = array()){
+        $data = !empty($data['Внешний вид всплывающего окна']) ? $data['Внешний вид всплывающего окна'] : array();
+        $settingsList = array();
+
+        foreach($data as $group){
+            foreach($group['items'] as $item){
+                $settingsList[] = $item;
+            }
+        }
+
+        return $this->GetSettingList($settingsList);
+    }
+
+    public function GetSettingsOpen($data){
+        $data = !empty($data['Автоматическое всплывание окон'][1]['items']) ? $data['Автоматическое всплывание окон'][1]['items'] : array();
+        return $this->GetSettingList($data);
+    }
+
+    public function GetSettingsText($data){
+        $data = !empty($data['Тексты во всплывающем окне'][1]['items']) ? $data['Тексты во всплывающем окне'][1]['items'] : array();
+        return $this->GetSettingList($data);
+    }
+
+    public function GetSettingsFilter($data){
+        $data = !empty($data['Фильтры'][1]['items']) ? $data['Фильтры'][1]['items'] : array();
+        return $this->GetSettingList($data);
+    }
+
+    public function GetPropertiesGroup(){
+        $this->SetTable($this->tGroup);
+        $this->Select()->Build()->Run(true);
+        $this->SetTable($this->tProperties);
+        return $this->GetAll();
+    }
+
 }

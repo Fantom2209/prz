@@ -2,6 +2,7 @@
 	namespace app\data;
 	use \app\core\config;
     use app\core\ErrorInfo;
+    use app\core\UsersManager;
 
     class Users extends \app\core\Model{
 
@@ -74,11 +75,17 @@
             $this->Login(true);
         }
 
-        public function Logout(){
-            if(self::ActiveUserInfo('BaseId')){
-                $this->SetSessionId(self::ActiveUserInfo('BaseId'), '');
-            }else{
-                $this->SetSessionId(self::ActiveUserInfo('UserId'), '');
+        public function Logout($danger = false){
+            if($danger){ //
+                $this->SetSessionId(UsersManager::ActiveUserInfo('BaseId'), '');
+                $this->SetSessionId(UsersManager::ActiveUserInfo('UserId'), '');
+            }
+            else{
+                if(UsersManager::ActiveUserInfo('BaseId')){
+                    $this->SetSessionId(UsersManager::ActiveUserInfo('BaseId'), '');
+                }else{
+                    $this->SetSessionId(UsersManager::ActiveUserInfo('UserId'), '');
+                }
             }
 
             setcookie('UserId', '', time() - 3600, '/');
@@ -88,17 +95,8 @@
             setcookie('Session', '', time() - 3600, '/');
         }
 
-        /*public static function InRole($role = array()){
-            $active = self::ActiveUserInfo('UserRole');
-            return in_array($active ? $active : 0, $role);
-        }*/
-
         public static function IsAuthorized(){
-            return  !empty(self::ActiveUserInfo('UserId'));
-        }
-
-        public static function ActiveUserInfo($key){
-            return !empty($_COOKIE[$key]) ? $_COOKIE[$key] : null;
+            return  !empty(UsersManager::ActiveUserInfo('UserId'));
         }
 
         public static function GetIP(){

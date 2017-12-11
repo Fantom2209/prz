@@ -6,7 +6,8 @@
 		protected $pdo;
 		protected $table;
 		protected $prefix;
-		
+
+		protected $distinct;
 		protected $operationalData;
 		protected $where;
 		protected $orderby;
@@ -34,6 +35,8 @@
                 Loger::Write($e->getMessage(), $e->getCode());
                 $this->AddError(ErrorInfo::DB_CONNECT);
             }
+
+            $this->distinct = false;
 		}
 				
 		public function __destruct(){
@@ -71,10 +74,15 @@
 			}
 
 			$this->mainIndex = ++$this->bindingIndex;
-			$this->sql = 'SELECT ' . $sql . ' FROM `' . $this->prefix . $this->table . '` `t'.($this->mainIndex).'`';
+			$this->sql = 'SELECT ' . ($this->distinct ? 'DISTINCT ' :'') . $sql . ' FROM `' . $this->prefix . $this->table . '` `t'.($this->mainIndex).'`';
 			return $this;
 		}
-		
+
+		public function Distinct(){
+		    $this->distinct = true;
+		    return $this;
+        }
+
 		public function Binding($type, $table, $fieldMain, $fieldDop, $reduction = ''){
             $this->prepared = false;
 		    if(!empty($table) && !empty($fieldMain) && !empty($fieldDop)){
@@ -176,6 +184,7 @@
             $this->prepared = false;
             $this->bindingIndex = 0;
             $this->mainIndex = 0;
+            $this->distinct = false;
             return $this;
 		}
 		
@@ -333,7 +342,7 @@
         }
 
         public function GetList(){
-            return $this->Select()->Build()->Run()->GetAll();
+            return $this->Select()->Build()->Run(true)->GetAll();
         }
 
         public function GetElementByField($field, $val){

@@ -6,6 +6,7 @@ class Response{
     const CONTENT_TYPE_VIEW = 1;
     const CONTENT_TYPE_JSON = 2;
     const CONTENT_TYPE_XML = 3;
+    const CONTENT_TYPE_CSS = 4;
 
     const CODE_ERROR = 500;
     const CODE_SUCCESS = 200;
@@ -32,6 +33,10 @@ class Response{
 
     public function SetTemplate($template){
         $this->view->Set('template', $template);
+    }
+
+    public function SetTemplateByName($name){
+        $this->view->Set('template', Config::PATH_VIEW . $this->controller . Config::PATH_SEPARATOR . $name . '.php');
     }
 
     public function __construct($controller, $action){
@@ -94,9 +99,20 @@ class Response{
         $this->data[$key] = $value;
     }
 
+    public function SetRange($data = array()){
+        if(!is_array($data)){
+            return;
+        }
+        foreach($data as $key => $val){
+            $this->Set($key, $val);
+        }
+    }
+
     public function Go(){
         $this->CheckError();
         switch ($this->contentType) {
+            case self::CONTENT_TYPE_CSS:
+                $this->SetHeader('Content-type','text/css');
             case self::CONTENT_TYPE_VIEW:
                 if (!$this->view->HasLayout()) {
                     $this->view->Set('layout', Config::PATH_LAYOUT . 'mainLayout.php');
@@ -116,6 +132,14 @@ class Response{
                 break;
         }
         exit;
+    }
+
+    public function ActivateCORSE(){
+        header("Access-Control-Allow-Origin: *");
+    }
+
+    public function SetHeader($name, $val){
+        header($name.':'. $val);
     }
 
     public function GenerateError($code = array()){
@@ -151,6 +175,15 @@ class Response{
             } else {
                 $this->SetError();
                 $this->SetContent(ErrorList::ErrorReporting()); // формирование ответа на ajax с ошибкой
+            }
+        }
+    }
+
+    public function ChechContentType($meta){
+        if(!empty($meta['method']['content'])){
+            $c = str_replace(array('(',')'), '', $meta['method']['content']);
+            if(defined('self::'.$c)){
+                $this->SetContentType(constant('self::'.$c));
             }
         }
     }

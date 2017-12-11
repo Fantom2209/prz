@@ -5,9 +5,11 @@
     use app\core\Response;
     use app\core\UsersManager;
     use app\data\Users;
+    use app\data\Schedule;
     use \app\helpers\Validator;
     use \app\core\ErrorInfo;
     use \app\helpers\Html;
+    use \app\helpers\Functions;
     use \app\data\Sites;
     use \app\data\Properties;
     use \app\lib\modules\Widget;
@@ -20,11 +22,14 @@
 
         private $validator;
 
-        public function __construct($controller, $action){
-            parent::__construct($controller, $action);
+        public function __construct($controller, $action, $meta){
+            parent::__construct($controller, $action, $meta);
             $this->validator = new Validator();
         }
 
+        /**
+         * @content(CONTENT_TYPE_JSON)
+         */
         public function Add(){
             $this->response->SetContentType(Response::CONTENT_TYPE_JSON);
             $user = new Users();
@@ -52,6 +57,8 @@
             else{
                 $data = Validator::CleanKey($data);
                 $site = new Sites();
+
+                $data['hash'] = $site->GetHashSite($data['url']);
                 $site->Insert($data)->Run();
                 if($site->IsSuccess()){
                     $item = $site->GetElementByField('id',$site->GetLastId());
@@ -64,7 +71,9 @@
                         Html::ActionPath('site', 'delete', array($item['id'])),
                         !$isActive ? 'disable-site' : '',
                         $isActive ? Html::ActionPath('site', 'enable', array($item['id'], '0')) : Html::ActionPath('site', 'enable', array($item['id'], '1')),
-                        $isActive ? 'Выключить' : 'Включить'
+                        $isActive ? 'Выключить' : 'Включить',
+                        //Html::ActionPath('site','schedule', array($item['id'])),
+                        $isActive ? '<i class="fa fa-check" aria-hidden="true"></i>' : '<i class="fa fa-ban" aria-hidden="true"></i>',
                     ));
                     $this->response->SetSuccess($html);
                     $this->response->SetSuccessFunc('AddLineTop');
@@ -75,6 +84,9 @@
             }
         }
 
+        /**
+         * @content(CONTENT_TYPE_JSON)
+         */
         public function Update(){
             $this->response->SetContentType(Response::CONTENT_TYPE_JSON);
             $site = new Sites();
@@ -104,7 +116,7 @@
                 if(!$site->CheckOwner($this->userManager->Get('UserId'),$id)){
                     $this->response->SetErrorFunc('ErrorAlert');
                     $this->response->SetError(ErrorInfo::GetMessage(ErrorInfo::ACCESS_DENIED_FOR_RESOURCES));
-                    $this->response->Go();
+                    $this->GetResponse();
                 }
 
                 $site->Update($data, '`id` = ?', array($id))->Run();
@@ -119,7 +131,9 @@
                         Html::ActionPath('site', 'delete', array($item['id'])),
                         !$isActive ? 'disable-site' : '',
                         $isActive ? Html::ActionPath('site', 'enable', array($item['id'], '0')) : Html::ActionPath('site', 'enable', array($item['id'], '1')),
-                        $isActive ? 'Выключить' : 'Включить'
+                        $isActive ? 'Выключить' : 'Включить',
+                        //Html::ActionPath('site','schedule', array($item['id'])),
+                        $isActive ? '<i class="fa fa-check" aria-hidden="true"></i>' : '<i class="fa fa-ban" aria-hidden="true"></i>',
                     ));
                     $this->response->SetSuccess($html);
                     $this->response->SetSuccessFunc('UpdateLine');
@@ -129,6 +143,9 @@
             }
         }
 
+        /**
+         * @content(CONTENT_TYPE_JSON)
+         */
         public function Delete(){
             $this->response->SetContentType(Response::CONTENT_TYPE_JSON);
             $site = new Sites();
@@ -154,11 +171,16 @@
             }
         }
 
+        /**
+         * @content(CONTENT_TYPE_JSON)
+         */
         public function Property(){
             $this->response->SetContentType(Response::CONTENT_TYPE_JSON);
             $property = new Properties();
-            $id = $this->request->GetData(0);
+            $site = new Sites();
 
+            $id = $this->request->GetData(0);
+            $siteInfo = $site->GetElementByField('id', $id);
             $data = $property->GetPropertiesBySite($id, 'yes');
 
             if($property->IsSuccess()){
@@ -204,14 +226,30 @@
 
                         if(!empty($fieldsHtml)){
                             $html .= Html::Snipet('AccordionPanel',array(
-                                'accordion', 'accordion-panel-' . ++$j, $title, $j == 1 ? ' in' : '', $fieldsHtml
+                                'accordion', 'accordion-panel-' . ++$j, $title, '', $fieldsHtml, 'default'
                             ));
                         }
                     }
 
                     $html = '
                         <input type="hidden" id="field_id" name="UserData[id]" value="'.$id.'">
-                        <div class="panel-group" id="accordion">' . $html .'</div>
+                        <div class="panel-group" id="accordion">' .
+
+                            Html::Snipet('AccordionPanel',array(
+                                'accordion', 'accordion-panel-' . ++$j, 'График работы', ' in',
+                                    $this->Schedule($id), 'default'
+                            )) .
+
+                            $html .
+
+                            Html::Snipet('AccordionPanel',array(
+                                'accordion', 'accordion-panel-' . ++$j, 'Скрипт', '',
+                                '<div class="form-group">
+                                    <label><em>Установите скрипт на сайте перед тегом <code>&lt;/body&gt;</code>:</em></label>
+                                    <textarea class="form-control" name="script">'.htmlentities('<script src="'.Config::URL_ROOT . Html::ActionPath('widget', 'index1', array($siteInfo[0]['hash'])).'"></script>').'</textarea>
+                                </div>', 'default'
+                        )) .
+                        '</div>
                         <button class="btn btn-primary submit">Сохранить</button>
                     ';
 
@@ -231,10 +269,15 @@
                 $files = $_FILES;
             }
 
+
+
             $data = $this->request->GetData('UserData');
             $checkboxes = $this->request->GetData('CheckBoxList');
             $sl = $this->request->GetData('SelectList');
             $il = $this->request->GetData('InputList');
+
+            $timeRelax = $this->request->GetData('TimeRelaxData');
+            $scheduleData = $this->request->GetData('ScheduleData');
 
             $property = new Properties();
 
@@ -246,7 +289,7 @@
                 }
             }
 
-            $this->validator->Validate($data + $files + $sl);
+            $this->validator->Validate($data + $files + $sl + $timeRelax + $scheduleData);
 
             if(!$this->validator->IsValid()){
                 $this->response->SetError($this->validator->ErrorReporting());
@@ -255,6 +298,8 @@
                 $data = Validator::CleanKey($data);
                 $files = Validator::CleanKey($files);
                 $sl = Validator::CleanKey($sl);
+                $timeRelax = Validator::CleanKey($timeRelax);
+                $scheduleData = Validator::CleanKey($scheduleData);
                 $siteId = $data['id'];
                 unset($data['id']);
 
@@ -262,7 +307,7 @@
                 if(!$site->CheckOwner($this->userManager->Get('UserId'),$siteId)){
                     $this->response->SetErrorFunc('ErrorAlert');
                     $this->response->SetError(ErrorInfo::GetMessage(ErrorInfo::ACCESS_DENIED_FOR_RESOURCES));
-                    $this->response->Go();
+                    $this->GetResponse();
                 }
 
                 $filesdb = array();
@@ -281,7 +326,16 @@
 
                 $property->UpdatePropertiesValue($siteId, $data + $checkboxes + $filesdb + $sl);
 
-                if ($property->IsSuccess()) {
+
+                $schedule = new Schedule();
+
+                $timeRelax['lunch'] = isset($timeRelax['lunch']) ? '1' : '0';
+                $timeRelax['work_holidays'] = isset($timeRelax['work_holidays']) ? '1' : '0';
+
+                $schedule->InsertOrUpdateRelax($siteId, $timeRelax);
+                $this->ScheduleAdd($siteId, $scheduleData);
+
+                if ($property->IsSuccess() && $schedule->IsSuccess()) {
                     $this->response->SetSuccess();
                     $this->response->SetSuccessFunc('UpdatePropertiesSuccess');
                 } else {
@@ -290,6 +344,9 @@
             }
         }
 
+        /**
+         * @content(CONTENT_TYPE_JSON)
+         */
         public function Enable(){
             $this->response->SetContentType(Response::CONTENT_TYPE_JSON);
             $site = new Sites();
@@ -307,7 +364,9 @@
                     Html::ActionPath('site', 'delete', array($item['id'])),
                     !$isActive ? 'disable-site' : '',
                     $isActive ? Html::ActionPath('site', 'enable', array($item['id'], '0')) : Html::ActionPath('site', 'enable', array($item['id'], '1')),
-                    $isActive ? 'Выключить' : 'Включить'
+                    $isActive ? 'Выключить' : 'Включить',
+                    //Html::ActionPath('site','schedule', array($item['id'])),
+                    $isActive ? '<i class="fa fa-check" aria-hidden="true"></i>' : '<i class="fa fa-ban" aria-hidden="true"></i>',
                 ));
                 $this->response->SetSuccess($html);
                 $this->response->SetSuccessFunc('UpdateLine');
@@ -317,5 +376,122 @@
             }
         }
 
+
+        private function Schedule($id){
+            $model = new Schedule();
+
+            $scheduleList = $model->GetScheduleList($id);
+            $relaxInfo = $model->GetRelaxTimeInfo($id);
+
+            $html = '';
+            $j = 0;
+
+            $timeList = Functions::GetTimeList('00:00', '23:59', 15,null, null);
+
+            /*$scheduleValues = array();
+            if(count($scheduleList) > 0){
+
+                foreach ($scheduleList as $item){
+                    $scheduleValues[$item['day_id']] = $item;
+                }
+                unset($scheduleList);
+            }*/
+
+            $days = $model->GetDaysList();
+            foreach ($days as $item){
+                $j++;
+                $isUpdate = false;
+                if(!empty($scheduleList[$j])){
+                    $isUpdate = true;
+                }
+
+                $selects = array(
+                    'work_start' => '',
+                    'work_end' => '',
+                );
+
+                foreach ($timeList as $key => $val){
+                    foreach ($selects as $name => &$select){
+                        $select .= '<option value="'.$val.'"'.($isUpdate && $scheduleList[$j][$name] == $val ? ' selected' : '').'>'.$key.'</option>';
+                    }
+                    unset($select);
+                }
+
+
+                $html .= '
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>'.$item['name'].': <input type="checkbox" name="ScheduleData[work__'.$j.']" '.($isUpdate && $scheduleList[$j]['work'] == '1' ? ' checked' : '').'></label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <select name="ScheduleData[work_start__'.$j.']" class="form-control">'.$selects['work_start'].'</select>
+                        </div>
+                        <div class="col-md-1 text-center">
+                            <div> - </div>        
+                        </div>
+                        <div class="col-md-3">
+                            <select name="ScheduleData[work_end__'.$j.']" class="form-control">'.$selects['work_end'].'</select>
+                        </div>
+                     </div>
+                ';
+
+            }
+
+            $selectLunchStart = '';
+            $selectLunchEnd = '';
+
+            foreach ($timeList as $key => $val){
+                $selectLunchStart .= '<option value="'.$val.'"'.(isset($relaxInfo['lunch_start']) && $relaxInfo['lunch_start'] == $val ? ' selected' : '').'>'.$key.'</option>';
+                $selectLunchEnd .= '<option value="'.$val.'"'.(isset($relaxInfo['lunch_end']) && $relaxInfo['lunch_end'] == $val ? ' selected' : '').'>'.$key.'</option>';
+            }
+
+
+            $html = '<div class="panel-group" id="accordion-schedule">' . $html . '
+                <hr>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Обед: <input type="checkbox" name="TimeRelaxData[lunch]" '.(isset($relaxInfo['lunch']) && $relaxInfo['lunch'] == '1' ? ' checked' : '').'></label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="TimeRelaxData[lunch_start]" class="form-control">'.$selectLunchStart.'</select>
+                    </div>
+                    <div class="col-md-1 text-center">
+                        <div> - </div>        
+                    </div>
+                    <div class="col-md-3">
+                        <select name="TimeRelaxData[lunch_end]" class="form-control">'.$selectLunchEnd.'</select>
+                    </div>
+                 </div>
+                 <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Принимать звонки по праздникам: <input type="checkbox" name="TimeRelaxData[work_holidays]" '.(isset($relaxInfo['work_holidays']) && $relaxInfo['work_holidays'] == '1' ? ' checked' : '').'></label>
+                        </div>
+                    </div>
+                 </div>
+            </div>';
+
+            return $html;
+        }
+
+        private function ScheduleAdd($id, $data){
+            $fields = array('work', 'work_start', 'work_end');
+            $model = new Schedule();
+            $days = $model->GetDaysList();
+            foreach($days as $item){
+                $result = array();
+                foreach($fields as $field){
+                    $result[$field] = !empty($data[$field . '__' . $item['id']]) ? $data[$field . '__' . $item['id']] : 0;
+                    if($result[$field] === 'on') {
+                        $result[$field] = 1;
+                    }
+                }
+                $model->InsertOrUpdate($id, $item['id'], $result);
+            }
+        }
 
     }

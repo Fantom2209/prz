@@ -28,7 +28,7 @@ class UsersManager{
     }
 
     public function HasRealUser(){
-        return $this->Get('UserSession') === $this->Get('ServerSession');
+        return !empty($this->Get('ServerSession')) && $this->Get('UserSession') === $this->Get('ServerSession');
     }
 
     public function HasAccess($meta){
@@ -64,23 +64,23 @@ class UsersManager{
     }
 
     public function IsAuthorized(){
-        return isset($_COOKIE['UserId']);
+        return self::ActiveUserInfo('UserId') != null;
     }
 
     public function IsSuperUser(){
-        return isset($_COOKIE['BaseId']);
+        return self::ActiveUserInfo('BaseId') != null;
     }
 
     public function GetActiveUser(){
         $result = array();
         if($this->IsAuthorized()){
             if($this->IsSuperUser()){
-                $result['BaseId'] = $_COOKIE['BaseId'];
-                $result['BaseName'] = $_COOKIE['BaseName'];
+                $result['BaseId'] = self::ActiveUserInfo('BaseId');
+                $result['BaseName'] = self::ActiveUserInfo('BaseName');
             }
-            $result['UserId'] = $_COOKIE['UserId'];
-            $result['UserName'] = $_COOKIE['UserName'];
-            $result['UserSession'] = $_COOKIE['Session'];
+            $result['UserId'] = self::ActiveUserInfo('UserId');
+            $result['UserName'] = self::ActiveUserInfo('UserName');
+            $result['UserSession'] = self::ActiveUserInfo('Session');
 
             $user = new Users();
             $idUser = $this->IsSuperUser() ? $result['BaseId'] : $result['UserId'];
@@ -98,4 +98,7 @@ class UsersManager{
         return $result;
     }
 
+    public static function ActiveUserInfo($key){
+        return !empty($_COOKIE[$key]) ? $_COOKIE[$key] : null;
+    }
 }

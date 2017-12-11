@@ -1,6 +1,8 @@
 <?php
     namespace app\data;
 
+    use \app\core\Config;
+
     class Sites extends \app\core\Model{
 
         private $propertiesTable;
@@ -93,6 +95,7 @@
             }
 
         }
+
         private function IssetProperty($site, $id){
             $sql = 'SELECT * FROM `p_PropertiesValue` WHERE `site_id` = ? AND `property_id` = ?';
             return $this->SetOperData(array($site, $id))->Query($sql)->Run()->CountResult() > 0;
@@ -120,5 +123,9 @@
 
         public function CheckOwner($idUser, $idSite){
             return $this->Select()->Where('`id` = ? AND id_user = ?', array($idSite, $idUser))->Build()->Run(true)->CountResult();
+        }
+
+        public function GetHashSite($url){
+            return MD5($url . time() . Config::APP_SECRET);
         }
     }

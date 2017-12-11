@@ -8,8 +8,8 @@ use \app\core\Config;
  */
 class Tools extends \app\core\Page {
 
-    public function __construct($controller, $action){
-        parent::__construct($controller, $action);
+    public function __construct($controller, $action, $meta){
+        parent::__construct($controller, $action, $meta);
     }
 
     public function Index(){
@@ -31,12 +31,12 @@ class Tools extends \app\core\Page {
     }
 
     public function FTest(){
-        $class = '\app\data\Sites';
-        $method = 'CheckOwner';
-        $param = array('1','12');
+        $class = '\app\data\Properties';
+        $method = 'GetBranchListWithEmail';
+        $param = array();
         $class = new $class();
         echo "<pre>";
-        var_dump(call_user_func_array(array($class, $method), $param));
+        print_r(call_user_func_array(array($class, $method), $param));
         echo "</pre>";
         exit;
     }

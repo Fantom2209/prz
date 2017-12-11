@@ -29,6 +29,9 @@
         const FILE_NOT_CORRECT_FORMAT = 16;
         const USER_COOKIES_MODIFIED = 17;
 
+        const WIDGET_UNDEFINED_SITE = 700;
+        const WIDGET_LOCKED_PHONE = 701;
+
 		public static function GetMessage($code, $data = array()){
 			if(!isset(self::$messages[$code])){
 				$code = 0;
@@ -73,8 +76,10 @@
             self::USER_NOT_ACTIVATE => 'Збой при активации!',
             self::FILE_NOT_CORRECT => 'Файл поврежден!',
             self::FILE_SIZE_EXCEEDED => 'Файл слишком большой!',
-            self::FILE_NOT_CORRECT_FORMAT => 'Ожидаеться другой тип файла',
+            self::FILE_NOT_CORRECT_FORMAT => 'Файл поврежден или имеет недопустимый тип',
             self::USER_COOKIES_MODIFIED => 'Данные сеанса повреждены. Войдите в систему заново',
+            self::WIDGET_UNDEFINED_SITE => 'Сайт не определен',
+            self::WIDGET_LOCKED_PHONE => 'Отказано в услуге'
 		);
 		
 	}

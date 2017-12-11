@@ -11,11 +11,9 @@
 		    self::Init();
 
             $controllerFull = '\app\lib\\'. self::$controller;
-            $controller = new $controllerFull(self::$controller, self::$action);
             self::$action .= (strtolower($_SERVER['REQUEST_METHOD']) == 'post') ? 'Post' : '';
             self::GetMetaInfo($controllerFull, self::$action);
-
-            $controller->CheckAccess(self::$meta);
+            $controller = new $controllerFull(self::$controller, self::$action, self::$meta);
             $controller->{self::$action}();
             $controller->GetResponse();
 		}

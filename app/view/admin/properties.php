@@ -1,4 +1,7 @@
 <?php use \app\helpers\Html;?>
+
+<?php $this->modules->filter; ?>
+
 <div class="row">
 
         <div class="col-md-12">
@@ -19,9 +22,10 @@
                     ?>
                 <?php endforeach;?>
             </table>
-
         </div>
 </div>
+
+<?php echo $this->Get('pagination');?>
 
 <div id="modalAddProperty" class="modal fade">
     <div class="modal-dialog">

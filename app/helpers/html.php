@@ -52,7 +52,7 @@ class Html
                 <td><span>{{3}}</span></td>
                 <td><span>{{4}}</span></td>
                 <td>{{5}}</td>
-                <td><a href="#modalUpdateUser" data-toggle="modal" class="ajax-link link-line-action" data-href="{{6}}">Редактировать</a></td>
+                <td><a href="#modalUpdateBranch" data-toggle="modal" class="ajax-link link-line-action" data-href="{{6}}">Редактировать</a></td>
                 <td><a href="{{7}}">{{8}}</a></td>
                 <td><a href="{{9}}">Войти</a></td>
             </tr>
@@ -66,13 +66,28 @@ class Html
                 <td><span>{{1}}</span></td>
                 <td><span>{{2}}</span></td>
                 <td><span>{{3}}</span></td>
-                <td><a href="#modalUpdateSite" data-toggle="modal" class="ajax-link link-line-action" data-href="{{4}}">Редактировать</a></td>
-                <td><a href="#modalUpdateProperties" data-toggle="modal" class="ajax-link add-preloader" data-href="{{5}}" >Свойства</a></td>
-                <td><a href="#modal-confirm" data-toggle="modal" class="link-line-action confirm" data-href="{{6}}">Удалить</a></td>
-                <td><a href="#" class="ajax-link link-line-action" data-href="{{8}}">{{9}}</a></td>
+                <td><a href="#modalUpdateSite" data-toggle="modal" class="ajax-link link-line-action" data-href="{{4}}" title="Редактировать"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>
+                <td><a href="#modalUpdateProperties" data-toggle="modal" class="ajax-link add-preloader" data-href="{{5}}" title="Настроить виджет"><i class="fa fa-wrench" aria-hidden="true"></i></a></td>
+                <td><a href="#modal-confirm" data-toggle="modal" class="link-line-action confirm" data-href="{{6}}" title="Удалить"><i class="fa fa-trash-o" aria-hidden="true"></i></a></td>
+                <td><a href="#" class="ajax-link link-line-action" data-href="{{8}}" title="{{9}}">{{10}}</a></td>
             </tr>
         ';
     }
+
+    private static function Snipet_BranchLine()
+    {
+        self::$html = '
+            <tr>
+                <td><span>{{1}}</span></td>
+                <td><span>{{2}}</span></td>
+                <td><a href="#modalUpdateBranch" data-toggle="modal" class="ajax-link link-line-action" data-href="{{3}}">Редактировать</a></td>
+                <td><a href="#modalScheduleBranch" data-toggle="modal" data-href="{{4}}" >Расписание</a></td>
+                <td><a href="#modal-confirm" data-toggle="modal" class="link-line-action confirm" data-href="{{5}}">Удалить</a></td>
+            </tr>
+        ';
+    }
+
+
 
     private static function Snipet_PropertyLine()
     {
@@ -89,7 +104,7 @@ class Html
     private static function Snipet_FieldString()
     {
         self::$html = '
-            <div class="form-group">
+            <div class="form-group {{5}}">
                 <label>{{1}}:</label>
                 <input class="form-control" type="text" name="UserData[{{2}}{{3}}]" value="{{4}}">
                 <div class="error-box"></div>
@@ -204,7 +219,7 @@ class Html
     private static function Snipet_FieldSelect()
     {
         self::$html = '
-            <div class="form-group {{8}}">
+            <div class="form-group {{5}}">
                 <label>{{1}}:</label>
                 <select class="form-control" id="field_{{2}}" name="UserData[{{2}}]">
                 {{3}}
@@ -230,7 +245,7 @@ class Html
 
     private static function Snipet_AccordionPanel(){
         self::$html = '
-            <div class="panel panel-default">
+            <div class="panel panel-{{6}}">
                 <div class="panel-heading">
                     <h4 class="panel-title">
                         <a data-toggle="collapse" data-parent="#{{1}}" href="#{{2}}">{{3}}</a>

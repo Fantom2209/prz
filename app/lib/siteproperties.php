@@ -15,11 +15,14 @@ class SiteProperties extends \app\core\Page
 {
     private $validator;
 
-    public function __construct($controller, $action){
-        parent::__construct($controller, $action);
+    public function __construct($controller, $action, $meta){
+        parent::__construct($controller, $action, $meta);
         $this->validator = new Validator();
     }
 
+    /**
+     * @content(CONTENT_TYPE_JSON)
+     */
     public function Add(){
         $this->response->SetContentType(Response::CONTENT_TYPE_JSON);
         $property = new Properties();
@@ -57,7 +60,7 @@ class SiteProperties extends \app\core\Page
         $data['paramsPanel'] =
             '<div class="panel-group" id="accordion">' .
             Html::Snipet('AccordionPanel', array(
-                'accordion-add', 'accordion-add-panel-1', 'Параметры', '', $paramsHtml
+                'accordion-add', 'accordion-add-panel-1', 'Параметры', '', $paramsHtml, 'default'
             )) .
             '</div>';
 
@@ -116,6 +119,9 @@ class SiteProperties extends \app\core\Page
         }
     }
 
+    /**
+     * @content(CONTENT_TYPE_JSON)
+     */
     public function Update(){
         $this->response->SetContentType(Response::CONTENT_TYPE_JSON);
         $site = new Sites();
@@ -174,7 +180,7 @@ class SiteProperties extends \app\core\Page
             $data['paramsPanel'] =
                 '<div class="panel-group" id="accordion">' .
                     Html::Snipet('AccordionPanel', array(
-                        'accordion-update', 'accordion-update-panel-1', 'Параметры', '', $paramsHtml
+                        'accordion-update', 'accordion-update-panel-1', 'Параметры', '', $paramsHtml, 'default'
                     )) .
                 '</div>';
 
@@ -233,10 +239,14 @@ class SiteProperties extends \app\core\Page
         }
     }
 
+    /**
+     * @content(CONTENT_TYPE_JSON)
+     */
     public function Delete(){
         $this->response->SetContentType(Response::CONTENT_TYPE_JSON);
         $site = new Sites();
         $site->DeleteProperty($this->request->GetData(0));
+
         if($site->IsSuccess()){
             $this->response->SetSuccess();
             $this->response->SetSuccessFunc('DeleteLine');
@@ -246,6 +256,9 @@ class SiteProperties extends \app\core\Page
         }
     }
 
+    /**
+     * @content(CONTENT_TYPE_JSON)
+     */
     public function Enable(){
         $this->response->SetContentType(Response::CONTENT_TYPE_JSON);
         $site = new Sites();

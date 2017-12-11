@@ -1,10 +1,16 @@
 <?php
 namespace app\lib;
+use app\core\Config;
 use \app\data\Users;
 use \app\data\Sites;
+use app\helpers\Develop;
+use app\helpers\Html;
 use \app\lib\modules\Menu;
 use \app\data\Properties;
+use \app\data\Blacklist;
+use \app\data\Holidays;
 use \app\core\UsersManager;
+use \app\helpers\Pagination;
 
 
 /**
@@ -12,8 +18,8 @@ use \app\core\UsersManager;
  */
 class Admin extends \app\core\Page{
 
-    public function __construct($controller, $action){
-        parent::__construct($controller, $action);
+    public function __construct($controller, $action, $meta){
+        parent::__construct($controller, $action, $meta);
 
         $menu = $this->response->modules->Add('menu');
         $menu->Init(Menu::TYPE_ADMIN_MAIN);
@@ -40,10 +46,26 @@ class Admin extends \app\core\Page{
         $propertiesType = $site->GetPropertiestType();
         $propertiesGroup = $site->GetPropertiesGroup();
         
-        $this->response->Set('properties',$site->GetProperties());
+        //$this->response->Set('properties',$site->GetProperties());
         $this->response->Set('PropertiesType',$propertiesType);
         $this->response->Set('PropertiesGroup',$propertiesGroup);
         $this->response->Set('title','Настройка свойств сайтов');
+
+        $model = new Properties();
+        $page = $this->request->GetData('page');
+
+        //filter
+        $filter = $this->response->modules->Add('filter');
+        $filter->Init($this->request, 'properties');
+        $filter->Set('page',$page ? $page : 1);
+        $filter->Set('groups',$model->GetPropertiesGroup());
+
+        //pagination
+        $metaDb = $filter->Get('dbMeta');
+        $countItems = $model->Select()->Where($metaDb['pattern'], $metaDb['data'])->Build()->Run(true)->CountResult();
+        $p = Pagination::Build($countItems, $page ? $page : 1, Config::PAGINATION_COUNT_LEFT, Config::PAGINATION_COUNT_RIGHT, $filter->GetParamList());
+        $this->response->Set('properties',$model->Select()->Where($metaDb['pattern'], $metaDb['data'])->Limit($p['start'],Config::PAGINATION_COUNT_ON_PAGE)->Build()->Run()->GetAll());
+        $this->response->Set('pagination', $p['html']);
     }
 
     public function PropertiesPost(){
@@ -54,6 +76,45 @@ class Admin extends \app\core\Page{
         }
         else{
             $this->response->SetError('Ошибка при обновлении!');
+        }
+    }
+
+    public function Blacklist(){
+        $model = new Blacklist();
+        $info = $model->GetItems();
+        $this->response->Set('phones', $info[0]['phones']);
+    }
+
+    public function BlacklistPost(){
+        $data = $this->request->GetData('UserData');
+        $model = new Blacklist();
+        $model->UpdateList($data);
+        if($model->IsSuccess()){
+            $this->response->SetSuccess();
+            $this->response->SetSuccessFunc('SuccessOperation');
+        }
+        else {
+            $this->response->SetRedirect(Html::ActionPath('error', 'index', $model->ErrorReporting()));
+        }
+    }
+
+    public function Holidays(){
+        $model = new Holidays();
+        $info = $model->Get();
+        $this->response->Set('holidays', isset($info['holidays']) ? $info['holidays'] : '');
+    }
+
+    public function HolidaysPost(){
+        $data = $this->request->GetData('UserData');
+        $model = new Holidays();
+        $model->UpdateOrInsert(1, $data);
+
+        if($model->IsSuccess()){
+            $this->response->SetSuccess();
+            $this->response->SetSuccessFunc('SuccessOperation');
+        }
+        else {
+            $this->response->SetRedirect(Html::ActionPath('error', 'index', $model->ErrorReporting()));
         }
     }
 }
